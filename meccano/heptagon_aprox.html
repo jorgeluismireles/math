@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Meccano heptagon approximation</title>
+</head>
+<body>
+<h1>Meccano heptagon approximation</h1>
+<svg width="440" height="440" style="border:1px solid gray;">
+ <g id="heptagon" transform="translate(250 250)">
+  <g fill="#08f8" stroke="#008">
+   <path id="p20a"></path>
+   <path id="p20b"></path>
+   <path id="p20c"></path>
+   <path id="p20d"></path>
+   <path id="p20e"></path>
+   <path id="p20f"></path>
+   <path id="p20g"></path>
+  </g>
+  <g fill="#f808" stroke="#800">
+   <path id="p36a"></path>
+   <path id="p36b"></path>
+   <path id="p36c"></path>
+  </g>
+  <g fill="#80f8" stroke="#408">
+   <path id="p45a"></path>
+  </g>
+ </g>
+</svg>
+</body>
+
+<script type="text/javascript">
+const rod = (R, n)=> {
+	const r = R/2
+	const L = 2 * n * r
+	const d  = [ 
+		"m", -r, 0,
+		"a", r, r, 0, 0, 1, +2*r, 0, "l", 0, +L,
+		"a", r, r, 0, 0, 1, -2*r, 0, "l", 0, -L,
+		"z", "m", r/2, -2*r
+	]	
+	for (let i=0; i <= n; i++) { // holes
+		d.push(...["m", 0, 2*r, "a", r/2, r/2, 0, 0, 0, r, 0, r/2, r/2, 0, 0, 0, -r, 0])
+	}
+	return d.join(" ")
+}
+
+const r = 9
+
+const dt = (id, d, t)=> {
+	if (d) document.getElementById(id).setAttribute("d", d);
+	if (t) document.getElementById(id).setAttribute("transform", t) 	
+}
+
+const R = (r)=> { return `rotate(${r})`}
+const t20 = `translate(0 ${20*r})`
+const t36 = `translate(0 ${36*r})`
+
+const acos = (a)=> { return 180* Math.acos(a) / Math.PI }
+const law = (a,b,c)=> { return acos((a*a + b*b - c*c)/(2*a*b)) }
+
+dt("heptagon", null, "translate(220,20) scale(1 1)")
+
+const r0 = 90 - acos(18/20)
+dt("p20a", rod(r, 20), `${R(+r0)}`)
+
+const r1 = 180 + law(20, 36, 20)
+const r2 = r1  + law(36, 45, 36)
+const r3 = r2  + law(45, 36, 20)
+const r4 = r3  + law(20, 36, 20)
+
+dt("p36a", rod(r, 36), `${R(+r0)} ${t20} ${R(r1)}`)
+dt("p45a", rod(r, 45), `${R(+r0)} ${t20} ${R(r2)}`)
+dt("p36b", rod(r, 36), `${R(+r0)} ${t20} ${R(r3)}`)
+dt("p20b", rod(r, 20), `${R(+r0)} ${t20} ${R(r4)}`)
+
+const r5 = 180 + law(20, 20, 36)
+const r6 = 180 + law(20, 36, 45)
+
+dt("p20c", rod(r, 20), `${R(+r0)} ${t20} ${R(r4)} ${t20} ${R(r5)}`)
+dt("p20d", rod(r, 20), `${R(+r0)} ${t20} ${R(r3)} ${t36} ${R(r6)}`)
+
+
+
+dt("p20e", rod(r, 20), `${R(-r0)}`)
+
+const r7 = 180 - law(20, 36, 20) - law(36, 36, 45)
+
+dt("p36c", rod(r, 36), `${R(-r0)} ${t20} ${R(r7)}`)
+
+const r8 = r7 - law(20, 36, 20)
+dt("p20f", rod(r, 20), `${R(-r0)} ${t20} ${R(r8)}`)
+
+const r9 = 180 - law(20, 20, 36)
+dt("p20g", rod(r, 20), `${R(-r0)} ${t20} ${R(r8)} ${t20} ${R(r9)}`)
+
+
+</script>
+</html>
