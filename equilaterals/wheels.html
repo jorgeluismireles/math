@@ -1,0 +1,40 @@
+<html>
+<head>
+</head>
+<style>
+body { font-family: Arial; }
+.circle { stroke:#000; stroke-width:3; fill:#fff; }
+.dot { fill:black; }
+.ray { stroke-width:4 }
+.number { font-family:Arial; font-size:15; stroke:#000; fill; #000; text-anchor: middle; alignment-baseline:middle; }
+th { border:1 solid #888; background:#888; color:#fff; padding:2px 5px; }
+td { border-bottom:1; color:#888; text-align: right; padding: 2px 5px; }
+span.button { margin:3px; padding:3px; border:1px solid #888; background:#eee; }
+span.button:hover { background:#ddd; cursor:pointer; }
+</style>
+ </head>
+
+<body>
+  <div>
+    <span class="button" onclick="circles ('c10','c12')">Circles</span>
+    <span class="button" onclick="wheels('c10','c12')">Wheels</span>
+  </div>
+ <div id="c10"></div>
+ <div id="c12"></div>
+ <div>Copied from /equilaterals/math/bin/org/jolumij/equil</div>
+</body>
+
+<script type="text/javascript" src="wheels.js"></script>
+
+ <script>
+function ready() {
+	//count($("c10"));
+	//vertices('c10','c12');
+}
+document.addEventListener("DOMContentLoaded", ready, false);
+ </script>
+ 
+ 
+ 
+ 
+</html>
