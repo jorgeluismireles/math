@@ -1,0 +1,205 @@
+<body>
+  <div><a href="http://jsfiddle.net/jolumij/fzu3jw23/">Original</a></div>
+  <div>14th pentagon (Stein, 1985)</div>
+  <svg height="400" width="450" id="tiling" style="border:1px solid gray"></svg>
+  <br/>
+  <svg height="250" width="450" id="design" style="border:1px solid gray"></svg>
+  <div>
+&alpha; &equiv; &ang;EAB. &beta; &equiv; &ang;ABC. &gamma; &equiv; &ang;BCD. &delta; &equiv; &ang;CDE. &epsilon; &equiv; &ang;DEA.
+</div>
+<div>
+<div>Condition 1) &alpha; = 90&deg;.</div>
+<div>Condition 2) 2&beta; + &gamma; = 360&deg;.</div>
+<div>Condition 3) &gamma; + &epsilon; = 180&deg;.</div>
+</div>
+
+<dl>
+<dt><b>Blue right triangles</b>. From condition 2, BJ is perpendicular to AB:</dt>
+<dd>
+<div>Smallest angle = &gamma;/2</div>
+<div>Hypotenuse: BC = CJ = DJ = 1</div>
+<div>Small cathetus: BL = JL = DK = cos (&gamma;/2)</d>
+<div>Large cathetus: CL = JK = sin (&gamma;/2)</d>
+</dd>
+<dt>
+<b>Red right triangles</b>.
+From condition 3, &ang;DEF = &gamma;, so:
+</dt>
+<dd>
+<div>&ang;EGH = &ang;GDI = &gamma;</div>
+<div>Hypotenuse: DG = GE = 1</div>
+<div>Small cathetus: DI = GH = cos(&gamma;)</div>
+<div>Large cathetus: IG = EH = sin(&gamma;)</div>
+</dd>
+<dt>Y distances:</dt>
+<dd>
+ <div>DI + GH + 1 = BL + LJ + KD</div>
+
+ <div>2*cos(&gamma;) + 1 = 3*sin(&gamma;/2)</div>
+ <div>2*(1 - 2*sin<sup>2</sup>(&gamma;/2)) + 1 = 3*sin(&gamma;/2)</div>
+ <div>4sin<sup>2</sup>(&gamma;/2) + 3sin(&gamma;/2) - 3 = 0</div>
+ <div style="padding:5px; margin:3px;">
+  <span style="border:1px solid gray; padding:3px;">
+ BL = LJ = KD = sin(&gamma;/2) = (&radic;(57) - 3) / 8
+  </span></div>
+ <div style="padding:5px; margin:3px;">
+  <span style="border:1px solid gray; padding:3px;">
+ DI = GH = cos(&gamma;) = 1 - 2*sin(&gamma;/2) = (3*&radic;(57) - 17) / 16
+  </span>
+ </div>
+<dd>
+
+</dl>
+
+  </div>
+<script type="text/javascript">
+  
+var s = Math.sqrt(57);
+var y1 = (s - 3) / 8; // sin (C/2)
+var y2 = (3*s - 17) / 16; // cos C
+var x1 = Math.sqrt(6*s - 2) / 8; // cos (C/2)
+var x2 = Math.sqrt(102*s - 546) / 16; // sin(C)
+
+var A1 = [          0,      0];
+var B1 = [2*x2 +   x1,      0];
+var C1 = [2*x2 + 2*x1,    -y1];
+var D1 = [2*x2       ,  -3*y1];
+var E1 = [          0,     -1];
+
+var A2 = [A1[0], -A1[1]];
+var B2 = [B1[0], -B1[1]];
+var C2 = [C1[0], -C1[1]];
+var D2 = [D1[0], -D1[1]];
+var E2 = [E1[0], -E1[1]];
+
+var X1 = 4*x2 + 3*x1;
+var A3 = [X1 - A1[0], -y1 + A1[1]];
+var B3 = [X1 - B1[0], -y1 + B1[1]];
+var C3 = [X1 - C1[0], -y1 + C1[1]];
+var D3 = [X1 - D1[0], -y1 + D1[1]];
+var E3 = [X1 - E1[0], -y1 + E1[1]];
+
+var A4 = [A3[0], -y1 + A2[1]];
+var B4 = [B3[0], -y1 + B2[1]];
+var C4 = [C3[0], -y1 + C2[1]];
+var D4 = [D3[0], -y1 + D2[1]];
+var E4 = [E3[0], -y1 + E2[1]];
+
+var A5 = [D4[0],      D4[1]];
+var B5 = [C2[0],      C2[1]];
+var C5 = [D2[0],      D2[1]];
+var D5 = [D2[0],      D2[1] + 2];
+var E5 = [D5[0] + x2, D5[1] - y2];
+
+var A6 = [E5[0],       E5[1]];
+var B6 = [A5[0],       A5[1]];
+var C6 = [B6[0] + x2,  B6[1] - y2];
+var D6 = [C6[0],       C6[1] + 2];
+var E6 = [D6[0] -2*x1, D6[1] + 2*y1];
+
+var svgNS = "http://www.w3.org/2000/svg";
+
+function polygon(d, color, pos, x, y, t) {
+  var p = document.createElementNS(svgNS, "polygon");
+  p.setAttributeNS(null, "style", "fill:" + color + ";stroke:black;stroke-width:1");
+  var _ = [];
+  for (var i=0; i < pos.length; i++) {
+    var point = pos[i];
+    var X = t.cx + (x + point[0])*t.scale;
+    var Y = t.cy + (y + point[1])*t.scale;
+    _.push(X + "," + Y)
+  }
+  p.setAttributeNS(null, "points", _.join(" "));
+    d.appendChild(p);
+}
+
+function polyline(d, color, width, pos, x, y, t) {
+    var p = document.createElementNS(svgNS, "polyline");
+    p.setAttributeNS(null, "style", "fill:none;stroke:" + color + ";stroke-width:" + width);
+    p.setAttributeNS(null, "stroke-linejoin", "round");
+  var _ = [];
+  for (var i=0; i < pos.length; i++) {
+    var point = pos[i];
+    var X = t.cx + (x + point[0])*t.scale;
+    var Y = t.cy + (y + point[1])*t.scale;
+    _.push(X + "," + Y)
+  }
+  p.setAttributeNS(null, "points", _.join(" "));
+    d.appendChild(p);
+}
+
+function text(d, text, color, pos, x, y, t) {
+    var p = document.createElementNS(svgNS, "text");
+    p.setAttributeNS(null, "x", t.cx + (x + pos[0])*t.scale);
+    p.setAttributeNS(null, "y", t.cy + (y + pos[1])*t.scale);
+    p.setAttributeNS(null, "fill", color);
+    p.appendChild(document.createTextNode(text));
+    d.appendChild(p);
+}
+
+function six(x, y, t) {
+    var g = document.createElementNS(svgNS, "g");
+    polygon(g, "#96f", [ A1,B1,C1,D1,E1 ], x, y, t);
+    polygon(g, "#ff8", [ A2,B2,C2,D2,E2 ], x, y, t);
+    polygon(g, "#ff8", [ A3,B3,C3,D3,E3 ], x, y, t);
+    polygon(g, "#96f", [ A4,B4,C4,D4,E4 ], x, y, t);
+    polygon(g, "#f88", [ A5,B5,C5,D5,E5 ], x, y, t);
+    polygon(g, "#f88", [ A6,B6,C6,D6,E6 ], x, y, t);
+    return g;
+}
+
+var tiling = document.getElementById("tiling");
+var t = { cx: 20, cy: 50, scale: 16 };
+for (var x=0; x < 4; x++) {
+    for (var y=0; y < 3; y++) {
+        X = x * (3*x1 + 3*x2)  + y *(x2);
+        Y = x * (-y1 + 2 + y2) + y *(2 + 6*y1 - y2);
+        tiling.appendChild(six(X, Y, t));
+    }
+}
+
+var A = A3, B = B3, C = C3, D = D3, E = E3;
+var d = document.getElementById("design");
+var dt = { cx:-140, cy:230, scale:80 };
+polygon(d, "#ff8", [A,B,C,D,E], 0, 0, dt);
+
+var F = [E[0],    D[1]];
+var G = [D[0]+x2, D[1]+y2];
+var H = [G[0],    E[1]];
+var I = [D[0],    G[1]];
+
+var K = [D[0]   , E[1]];
+var J = [D[0]-x1, D[1]+y1];
+var K = [D[0]   , J[1]];
+var L = [J[0]   , C[1]];
+
+
+text(d, "A", "black", A, .05, .2, dt);
+text(d, "B", "black", B, -.15, .2, dt);
+text(d, "C", "black", C, -.2, .1, dt);
+text(d, "D", "black", D, -.1, -.1, dt);
+text(d, "E", "black", E, .1, +.05, dt);
+text(d, "F", "gray",  F,  .1,    0, dt);
+text(d, "G", "red",   G,  -.0, -0.05, dt);
+text(d, "H", "red",   H,  -.1,  0.2, dt);
+text(d, "I", "red",   I,  +.1,  0.2, dt);
+text(d, "J", "blue",  J, -.13, -.09, dt);
+text(d, "K", "blue",  K, -.1, +.22, dt);
+text(d, "L", "blue",  L, +.12, +.08, dt);
+
+text(d, "1", "black", A, .05, -0.4, dt);
+text(d, "1", "black", C, .25, .45, dt);
+text(d, "1", "blue", C, .27, -.35, dt);
+text(d, "1", "blue", J, .27, -.35, dt);
+text(d, "1", "red", D, .6, +.2, dt);
+text(d, "1", "red", G, .5, +.15, dt);
+
+polyline(d, "gray", "1", [D,F,E],   0, 0, dt);
+polyline(d, "red",  "3", [E,G,H,E], 0, 0, dt);
+polyline(d, "red",  "3", [D,G,I,D], 0, 0, dt);
+polyline(d, "blue", "3", [D,J,K,D], 0, 0, dt);
+polyline(d, "blue", "3", [C,J,L,C], 0, 0, dt);
+polyline(d, "blue", "3", [B,C,L,B], 0, 0, dt);
+
+
+</script>

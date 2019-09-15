@@ -1,0 +1,88 @@
+<body>
+ <div><a href="http://jsfiddle.net/jolumij/1qh7zav9/">Original</a></div>
+  <svg height="400" width="800" id="svg"></svg>
+ </body>
+  <script>
+  	
+var svgNS = "http://www.w3.org/2000/svg";  
+var H = Math.sqrt(3);
+var CX = 30;
+var CY = 60;
+var SCALE = 6;
+
+var a = [
+   [    0,    0], // 0
+   [  H  ,    1], // 1
+   [2*H  ,    0], // 2
+   [2*H+1,  H  ], // 3
+   [2*H+2,    0], // 4
+   [3*H+2,    1], // 5
+   [3*H+4,    1], // 6
+   [3*H+6,    1], // 7
+   [5*H+6,    3], // 8
+   [5*H+6,    1], // 9
+   [2*H+3, -H  ], // 10
+   [3*H+5, -H+1], // 11
+];
+var b = [];
+var c = [];
+var d = [];
+for (var i=0; i < a.length; i++) {
+	var ax = a[i][0];
+	var ay = a[i][1];
+	var dx = 10*H + 12 - ax;
+	var dy =         4 - ay;
+	b.push([dx -H-1, dy -H-3]);
+	c.push([ax -H-1, ay -H-3]);
+	d.push([dx     , dy     ]);
+}
+
+function pentagon(color, pos) {
+	var p = document.createElementNS(svgNS, "polygon");
+	p.setAttributeNS(null, "style", "fill:" + color + ";stroke:black;stroke-width:1");
+	var _ = [];
+	for (var i=0; i < pos.length; i++) {
+		var point = pos[i];
+		var x = CX + point[0]*SCALE;
+		var y = CY + point[1]*SCALE;
+		_.push(x + "," + y)
+	}
+	p.setAttributeNS(null, "points", _.join(" "));
+	return p;
+}
+
+function six(a, b, t) {
+	var g = document.createElementNS(svgNS, "g");
+	var x = t[0]*SCALE;
+	var y = t[1]*SCALE;
+	g.setAttributeNS(null, "transform", "translate(" + x + " " + y + ")");
+	g.appendChild(pentagon("#963", [a[0], a[1], b[3], b[2], b[1] ]));
+	g.appendChild(pentagon("#f00", [a[1], a[2], b[5], b[4], b[3] ]));
+	g.appendChild(pentagon("#f90", [a[2], a[3], a[10],b[6], b[5] ]));
+	g.appendChild(pentagon("#ee0", [a[4], a[5], a[7], a[11],a[10]]));
+	g.appendChild(pentagon("#0f0", [a[10],a[11],b[8], b[7], b[6] ]));
+	g.appendChild(pentagon("#0ee", [a[7], a[8], a[9], b[8], a[11]]));
+	return g;
+}
+
+function twelve(t) {
+	var g = document.createElementNS(svgNS, "g");
+	g.appendChild(six(a, c, t));
+	g.appendChild(six(b, d, t));
+	return g;
+}
+
+
+var svg = document.getElementById("svg");
+var dx = [ 9*H + 12,     3 ];
+var dy = [   H +  1, H + 3 ];
+for (var x=0; x < 2; x++) {
+	for (var y=0; y < 6; y++) {
+		var tx = x*dx[0] + y*dy[0];
+		var ty = x*dx[1] + y*dy[1];
+		svg.appendChild(twelve([tx, ty]));
+	}
+}
+	
+
+  </script>
