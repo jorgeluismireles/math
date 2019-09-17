@@ -27,9 +27,11 @@
    <path id="p8n"></path>
    <path id="p8o"></path>
   </g>
-
  </g>
 </svg>
+<pre id="pre">
+
+</pre>
 </body>
 <script type="text/javascript">
 const rod = (R, n)=> {
@@ -85,6 +87,63 @@ dt("p8m", rod(r, 11), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t7} rotate(-1
 dt("p8n", rod(r, 11), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t1} rotate(+74.1)`)
 dt("p8o", rod(r, 11), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t7} rotate(+105.7)`)
 
+
+
+
+const H = 180/7
+const Hr = Math.PI*H/180
+const a = 1
+const b = 8
+const d = b*Math.sqrt(2 - 2*Math.cos(Hr))
+const e = Math.sqrt(a*a + d*d - 2*a*d*Math.cos(2*Hr))
+const E = Math.acos((e*e + a*a - d*d) / (2*e*a))
+const F = (11*Hr) - E
+const c = Math.sqrt(e*e + b*b - 2*e*b*Math.cos(F))
+const C = Math.acos((b*b + c*c - e*e) / (2*b*c))
+
+
+const sin = (s)=> { return Math.sin(s*Math.PI/7) }
+
+const y1 = 8*Math.sin(2*Math.PI / 7)
+
+document.getElementById("pre").innerHTML =
+`
+  sin(1*pi/7) = ${sin(1)}
+  sin(2*pi/7) = ${sin(2)}
+  sin(3*pi/7) = ${sin(3)} = sin(4*pi/7)
+  sin(4*pi/7) = ${sin(4)}
+
+  sin2 / sin1 = ${ sin(2) / sin(1) } = diagonal-b
+  sin3 / sin1 = ${ sin(3) / sin(1) } = diagonal-c
+  sin3 / sin2 = ${ sin(3) / sin(2) } = 1 - diagonal-c
+
+- sin(pi/7) + sin(2pi/7) + sin(4pi/7) = [${- sin(1) + sin(2) + sin(4) }]
+                        sqrt(112) / 8 = [${ Math.sqrt(112) / 8 }]
+
+
+
+  H = pi/7    = [${H}°]
+  A = 2H      = [${2*H}°]
+  B = 11H     = [${11*H}°]
+C+D = 2pi-A-B = H 
+
+  a =                                   [${a}]
+  b =                                   [${b}]
+  d = b*sqrt(2-2cosH)                 = [${d}]
+  e = sqrt(a*a + d*d - 2*a*d*cos(A))  = [${e}]
+
+  E = acos((e*e + a*a - d*d) / 2*e*a) = [${180*E / Math.PI}°]
+  F = B - E                           = [${180*F / Math.PI}°]
+
+  c = sqrt(e*e + b*b - 2*e*b*cos(F))  = [${c}]
+
+  C = acos((b*b + c*c - e*e) / 2*b*c) = [${180*C / Math.PI}°]
+`
+
+const funct = (a)=> { return 2*a*a - a + 1 }
+
+for (let i=0; i < 16; i+=1)
+  console.log(`i=${i} funct=${funct(i)}`)
 
 </script>
 </html>
