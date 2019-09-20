@@ -2,24 +2,64 @@
 <html>
 <head>
 <title>Meccano</title>
+<style>
+td { vertical-align:top; }
+</style>
 </head>
 <body>
 <h1>Meccano regular heptagon</h1>
 
 <h2>Theory</h2>
-<div>
-<object data="automatic/heptagon_construction_js.svg" type="image/svg+xml">
-  
-</object>
-</div>
+<table>
+<tr>
+<td>
+<object data="automatic/heptagon_construction_js.svg" type="image/svg+xml"></object>
+</td>
+<td>
 <pre>
-sin A - sin B - sin C = - sqrt(7)/2
+Heptagonal triangles:
+    A = 1*pi/7
+    B = 2*pi/7
+    C = 3*pi/7
+    
+Heptagonal sides:
+        _____   _____   _____
+    a = p6 q1 = p1 p7 = p6 p7
 
+Heptagonal sines:
+            _____   _____   _____
+    sin A = q4 p6 / p6 q1 = q4 p6 / a
+            _____   _____   _____
+    sin B = q2 p1 / p1 p7 = q2 p1 / a
+            _____   _____   _____
+    sin C = q3 p6 / p6 p7 = q3 p6 / a
+
+Finding heptagonal internal height:
+    _____   _____   _____   _____
+    r1 q1 = p1 q2 + q3 p6 - p6 q4
+          = a * (sin B + sin C - sin A)
+
+According <a href="https://en.wikipedia.org/wiki/Heptagonal_triangle">heptagonal triangles</a>, we know:
+
+    sin A - sin B - sin C = - sqrt(7)/2
+
+So:
+   _____   
+   r1 q1 = a * sqrt(7) / 2
+
+Then (orange):
+   _____         _____2   _____2  
+   q1 r2 = sqrt( r1 r2  + r1 q1 )
+                 _____2
+         = sqrt( r1 r2  + 7*a*a / 4)
 </pre>
+</td>
+</tr>
 
-
+<tr>
+<td>
 <svg width="440" height="440" style="border:1px solid gray;">
- <g id="heptagon" transform="translate(250 250)">
+ <g id="heptagon1" transform="translate(250 250)">
   <g fill="#08f8" stroke="#008">
    <path id="p8a"></path>
    <path id="p8b"></path>
@@ -42,12 +82,63 @@ sin A - sin B - sin C = - sqrt(7)/2
   </g>
  </g>
 </svg>
-<pre id="pre">
+</td>
 
+<td>
+<pre>
+             _____
+Do a = 8 and r1 r2 = 3, and get 't Hooft heptagon:
+   _____
+   q1 r2 = sqrt( 9 + 7*64 / 4)
+         = 11
 </pre>
+</td>
+</tr>
+
+<tr>
+<td>
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="340">
+ <g id="heptagon2">
+  <g fill="#08f" fill-opacity="0.5" stroke="#008">
+   <path id="p3a"></path>
+   <path id="p3b"></path>
+   <path id="p3c"></path>
+   <path id="p3d"></path>
+   <path id="p3e"></path>
+   <path id="p3f"></path>
+   <path id="p3g"></path>
+
+   <path id="p3h"></path>
+   <path id="p3i"></path>
+   <path id="p3j"></path>
+   <path id="p3k"></path>
+  </g>
+  <g fill="#f80" fill-opacity="0.5" stroke="#800">
+   <path id="p4a"></path>
+   <path id="p4b"></path>
+   <path id="p4c"></path>
+   <path id="p4d"></path>
+  </g>
+ </g>
+</svg>
+</td>
+<td>
+<pre>
+One smaller rational heptagon!
+             _____
+Do a = 3 and r1 r2 = 1/2
+   _____
+   q1 r2 = sqrt( 1/4 + 7*9 / 4))
+         = 4
+</pre>
+</td>
+</tr>
+</table>
 </body>
+
+
 <script type="text/javascript">
-const rod = (R, n)=> {
+const rod = (R, n, skip)=> {
 	const r = R/2
 	const L = 2 * n * r
 	const d  = [ 
@@ -57,49 +148,90 @@ const rod = (R, n)=> {
 		"z", "m", r/2, -2*r
 	]	
 	for (let i=0; i <= n; i++) { // holes
-		d.push(...["m", 0, 2*r, "a", r/2, r/2, 0, 0, 0, r, 0, r/2, r/2, 0, 0, 0, -r, 0])
+    d.push(...["m", 0, 2*r])
+    if (skip && (i % 2 == 1))
+      continue
+		d.push(...["a", r/2, r/2, 0, 0, 0, r, 0, r/2, r/2, 0, 0, 0, -r, 0])
 	}
 	return d.join(" ")
 }
 
 const r = 20
+const R = (r)=> { return `rotate(${r})`}
 
 const dt = (id, d, t)=> {
 	if (d) document.getElementById(id).setAttribute("d", d);
 	if (t) document.getElementById(id).setAttribute("transform", t) 	
 }
 
-const r0 = 90 - 180/7
-const r1 = 2 * 180/7
+{
+  const r8  = ()=> { return rod(r, 8) }
+  const r11 = ()=> { return rod(r, 11) }
+  const t8 = `translate(0 ${8*r})`
 
-const R = (r)=> { return `rotate(${r})`}
-const t8 = `translate(0 ${8*r})`
+  const r0 = 90 - 180/7
+  const r1 = 2 * 180/7
+  dt("heptagon1", null, "translate(220,40) scale(1 1)")
+  dt("p8a", r8(), `${R(+r0)}`)
+  dt("p8b", r8(), `${R(-r0)}`)
+  dt("p8c", r8(), `${R(+r0)} ${t8} ${R(-r1)}`)
+  dt("p8d", r8(), `${R(-r0)} ${t8} ${R(+r1)}`)
+  dt("p8e", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
+  dt("p8f", r8(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)}`)
+  dt("p8g", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
 
-dt("heptagon", null, "translate(220,40) scale(1 1)")
-dt("p8a", rod(r, 8), `${R(+r0)}`)
-dt("p8b", rod(r, 8), `${R(-r0)}`)
-dt("p8c", rod(r, 8), `${R(+r0)} ${t8} ${R(-r1)}`)
-dt("p8d", rod(r, 8), `${R(-r0)} ${t8} ${R(+r1)}`)
-dt("p8e", rod(r, 8), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
-dt("p8f", rod(r, 8), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)}`)
-dt("p8g", rod(r, 8), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
+  const r2 = 90 -3*180/7
 
-const r2 = 90 -3*180/7
+  dt("p8h", r8(), `${R(+r2)}`)
+  dt("p8i", r8(), `${R(-r2)}`)
+  dt("p8j", r8(), `${R(+r2)} ${t8} ${R(+r1)}`)
+  dt("p8k", r8(), `${R(-r2)} ${t8} ${R(-r1)}`)
 
-dt("p8h", rod(r, 8), `${R(+r2)}`)
-dt("p8i", rod(r, 8), `${R(-r2)}`)
-dt("p8j", rod(r, 8), `${R(+r2)} ${t8} ${R(+r1)}`)
-dt("p8k", rod(r, 8), `${R(-r2)} ${t8} ${R(-r1)}`)
+  const t1 = `translate(0 ${1*r})`
+  const t7 = `translate(0 ${7*r})`
 
-const t1 = `translate(0 ${1*r})`
-const t7 = `translate(0 ${7*r})`
+  dt("p8l", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t1} ${R(-74.1)}`)
+  dt("p8m", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t7} ${R(-105.7)}`)
 
-dt("p8l", rod(r, 11), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t1} rotate(-74.1)`)
-dt("p8m", rod(r, 11), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t7} rotate(-105.7)`)
+  dt("p8n", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t1} ${R(+74.1)}`)
+  dt("p8o", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t7} ${R(+105.7)}`)
+}
 
-dt("p8n", rod(r, 11), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t1} rotate(+74.1)`)
-dt("p8o", rod(r, 11), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t7} rotate(+105.7)`)
+{
+  const r = 20
+  const r3 = ()=> { return rod(r, 6, true) }
+  const r4 = ()=> { return rod(r, 8, true) }
 
+  const t1 = `translate(0 ${2*r})`
+  const t2 = `translate(0 ${4*r})`
+  const t3 = `translate(0 ${6*r})`
+
+  const r0 = 90 - 180/7
+  const r1 = 2 * 180/7
+  dt("heptagon2", null, "translate(170,40) scale(1 1)")
+  dt("p3a", r3(), `${R(+r0)}`)
+  dt("p3b", r3(), `${R(-r0)}`)
+  dt("p3c", r3(), `${R(+r0)} ${t3} ${R(-r1)}`)
+  dt("p3d", r3(), `${R(-r0)} ${t3} ${R(+r1)}`)
+  dt("p3e", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
+  dt("p3f", r3(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)}`)
+  dt("p3g", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
+
+  const r2 = 90 -3*180/7
+
+  dt("p3h", r3(), `${R(+r2)}`)
+  dt("p3i", r3(), `${R(-r2)}`)
+  dt("p3j", r3(), `${R(+r2)} ${t3} ${R(+r1)}`)
+  dt("p3k", r3(), `${R(-r2)} ${t3} ${R(-r1)}`)
+
+  dt("p4a", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t1} ${R(-82.90)}`)
+  dt("p4b", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t2} ${R(-97.17)}`)
+
+  dt("p4c", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t1} ${R(+82.90)}`)
+  dt("p4d", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t2} ${R(+97.17)}`)
+}
+
+/*
 
 
 
@@ -157,6 +289,6 @@ const funct = (a)=> { return 2*a*a - a + 1 }
 
 for (let i=0; i < 16; i+=1)
   console.log(`i=${i} funct=${funct(i)}`)
-
+*/
 </script>
 </html>
