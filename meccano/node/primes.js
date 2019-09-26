@@ -5,7 +5,7 @@ const primes = (n)=>
     n = Math.abs(n)
     const factors = [ ]
     let divisor = 2
-    while (n >= 2) { // stackoverflow on error (was n > 2)
+    while (n >= 2) { // stackoverflow was on error (was n > 2)
         if (n % divisor == 0) {
             factors.push(divisor)
             n = n / divisor
