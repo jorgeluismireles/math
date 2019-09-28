@@ -2,13 +2,67 @@
 <html>
 <head>
 	<title>Nonagon</title>
+    <script type="text/javascript" src="meccano.js"></script>
 	<style>
 span { color:#f80; }		
 	</style>
 </head>
 <body>
 
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="440" style="border:1px solid gray;">
+ <g id="nonagon1">
+  <g fill="#c0c" stroke="#800" id="pd"></g>
+  <g fill="#08f" stroke="#008" id="pa"></g>
+  <g fill="#f80" stroke="#800" id="pb"></g>
+  <g fill="#0f8" stroke="#080" id="pc"></g>
+ </g>
+</svg>
+<script type="text/javascript">
+dt("nonagon1", null, "translate(220,40) scale(1 1)")
+const nine = [ 1,2,3,4,5,6,7,8,9 ]
+$("pd", pp("pd", nine))
+$("pa", pp("pa", nine))
+$("pb", pp("pb", nine))
+$("pc", pp("pc", nine))
+
+const r  = 18
+const R  = r => `rotate(${r})`
+const R0 = i => R(90 - i*180/9)
+const R1 = i => R(   - i*180/9)
+const TT = `translate(0 ${7*r})`
+const RR = () => rod(r, 7, true, true)
+
+const A =[]
+const a = [ "pa1","pb1","pc1","pa2","pb2","pc2","pa3","pb3","pc3" ]
+for (let i=0; i < a.length; i++) {
+    A.push( i==0 ? `${R0(1)}` : `${A[i-1]} ${TT} ${R1(2)}`)
+    dt(a[i], RR(), A[i])
+}
+
+const B = []
+const b = [ "pb4","pc4","pa4","pb5","pc5","pa5","pb6","pc6","pa6" ]
+for (let i=0; i < b.length; i++) {
+    B.push( i==0 ? `${R0(3)}` : `${A[i-1]} ${TT} ${R1(4)}`)
+    dt(b[i], RR(), B[i])
+}
+
+const C = []
+const c = [ "pd1","pd2","pd3","pd4","pd5","pd6","pd7","pd8","pd9" ]
+for (let i=0; i < c.length; i++) {
+    C.push( i==0 ? `${R0(6)}` : `${A[i-1]} ${TT} ${R1(7)}`)
+    dt(c[i], RR(), C[i])
+}
+
+const D = []
+const d = [ "pc7","pb7","pa7","pc8","pb8","pa8","pc9","pb9","pa9" ]
+for (let i=0; i < d.length; i++) {
+    D.push( i==0 ? `${R0(3)} ${TT} ${R1(1)}` : `${D[i-1]} ${TT} ${R1(4)}`)
+    dt(d[i], RR(), D[i])
+}
+</script>
+
 <table>
+
 <tr>
 <td>
 <a href="inkscape/3nonagons.svg">
@@ -69,15 +123,16 @@ Both:
 
 </table>
 
-<a href="automatic/nonagon_construction_js.svg">
+<!--a href="automatic/nonagon_construction_js.svg">
 <object data="automatic/nonagon_construction_js.svg" type="image/svg+xml">
 </object>
 <div>automatic/heptagon_construction_js.svg</div>
-</a>
+</a-->
+
+
 
 </body>
 <script>
-const $ = (i,t)=> { document.getElementById(i).innerHTML = t }
 
 const sinA = Math.sin(1*Math.PI/9)
 const sinB = Math.sin(2*Math.PI/9)
@@ -106,29 +161,19 @@ $("sin2", sinA*sinA + sinB*sinB + sinC*sinC)
 const sinABC = sinA*sinB*sinC
 $("sinABC2", sinABC*sinABC)
 
+/*
 console.log("sinA / sinB", sinA / sinB)
-
-//console.log("3/4", sinA*sinA + sinA*sinB + sinB*sinB)
-//console.log("3/4", cosA*cosA - cosA*cosB + cosB*cosB)
-
-//console.log("cosA*cosB - sinA*sinB = ", cosA*cosB - sinA*sinB)
-
 console.log("1 / cosC - sqrt(3) / sinC = 4 = " + ( 1/cosC - Math.sqrt(3)/sinC  ) )
-
 console.log("tanC - 4*sinC - sqrt(3) = 0 = ", sinC/cosC - 4*sinC - Math.sqrt(3) )
-
-
 console.log("C", 180*Math.acos(cosC) / Math.PI)
-
 console.log("tan(80°) - 4sin(80°) - sqrt(3) = 0 = ", Math.tan(80*Math.PI/180) - 4*Math.sin(80*Math.PI/180) - Math.sqrt(3) )
-
-
 console.log("tan 80°", sinC/cosC)
 console.log("4sinC + sqrt(3)", 4*sinC + Math.sqrt(3))
 console.log("1 + 2cosA", 1 + 2*cosA)
 console.log("2cosC + 2cosB + 1", 2*cosC + 2*cosB + 1)
-
+*/
 </script>
+
 
 
 </html>

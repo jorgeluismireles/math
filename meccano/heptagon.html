@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Heptagon</title>
+<script type="text/javascript" src="meccano.js"></script>
 <style>
 td { vertical-align:top; }
 </style>
@@ -9,34 +10,59 @@ td { vertical-align:top; }
 <body>
 <h1>Meccano heptagon</h1>
 
+<script>
+  const R =  r  => `rotate(${r})`
+  const r0 = 90 - 180/7
+  const r1 = 2 * 180/7
+  const r2 = 90 -3*180/7
+</script>
+
 <table>
 
 <tr>
 <td>
 <svg xmlns="http://www.w3.org/2000/svg" width="340" height="340">
- <g id="heptagon2">
-  <g fill="#08f" fill-opacity="0.5" stroke="#008">
-   <path id="p3a"></path>
-   <path id="p3b"></path>
-   <path id="p3c"></path>
-   <path id="p3d"></path>
-   <path id="p3e"></path>
-   <path id="p3f"></path>
-   <path id="p3g"></path>
-
-   <path id="p3h"></path>
-   <path id="p3i"></path>
-   <path id="p3j"></path>
-   <path id="p3k"></path>
-  </g>
-  <g fill="#f80" fill-opacity="0.5" stroke="#800">
-   <path id="p4a"></path>
-   <path id="p4b"></path>
-   <path id="p4c"></path>
-   <path id="p4d"></path>
-  </g>
+ <g id="heptagon3-4">
+  <g fill="#08f" fill-opacity="0.5" stroke="#008" id="pa"></g>
+  <g fill="#f80" fill-opacity="0.5" stroke="#800" id="pb"></g>
  </g>
 </svg>
+<script>
+{
+  const r = 20
+
+  dt("heptagon3-4", null, "translate(170,40) scale(1 1)")
+
+  const r3 = () => rod(r, 6, true)
+  const r4 = () => rod(r, 8, true) 
+
+  const t1 = `translate(0 ${2*r})`
+  const t2 = `translate(0 ${4*r})`
+  const t3 = `translate(0 ${6*r})`
+
+  $("pa", pp("pa", [ 1,2,3,4,5,6,7,8,9,10,11 ]))
+  $("pb", pp("pb", [ 1,2,3,4 ]))
+
+  dt("pa1", r3(), `${R(+r0)}`)
+  dt("pa2", r3(), `${R(-r0)}`)
+  dt("pa3", r3(), `${R(+r0)} ${t3} ${R(-r1)}`)
+  dt("pa4", r3(), `${R(-r0)} ${t3} ${R(+r1)}`)
+  dt("pa5", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
+  dt("pa6", r3(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)}`)
+  dt("pa7", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
+
+  dt("pa8", r3(), `${R(+r2)}`)
+  dt("pa9", r3(), `${R(-r2)}`)
+  dt("pa10", r3(), `${R(+r2)} ${t3} ${R(+r1)}`)
+  dt("pa11", r3(), `${R(-r2)} ${t3} ${R(-r1)}`)
+
+  dt("pb1", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t1} ${R(-82.90)}`)
+  dt("pb2", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t2} ${R(-97.17)}`)
+
+  dt("pb3", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t1} ${R(+82.90)}`)
+  dt("pb4", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t2} ${R(+97.17)}`)
+}
+</script>
 </td>
 <td>
 <pre>
@@ -53,34 +79,50 @@ Do a = 3 and r1 r2 = 1/2
 <tr>
 <td>
 <svg xmlns="http://www.w3.org/2000/svg" width="440" height="440">
- <g id="heptagon1" transform="translate(250 250)">
-  <g fill="#08f" fill-opacity="0.5" stroke="#008">
-   <path id="p8a"></path>
-   <path id="p8b"></path>
-   <path id="p8c"></path>
-   <path id="p8d"></path>
-   <path id="p8e"></path>
-   <path id="p8f"></path>
-   <path id="p8g"></path>
-
-   <path id="p8h"></path>
-   <path id="p8i"></path>
-   <path id="p8j"></path>
-   <path id="p8k"></path>
-  </g>
-  <g fill="#f80" fill-opacity="0.5" stroke="#800">
-   <path id="p8l"></path>
-   <path id="p8m"></path>
-   <path id="p8n"></path>
-   <path id="p8o"></path>
-  </g>
+ <g id="heptagon8-11" transform="translate(250 250)">
+  <g fill="#08f" fill-opacity="0.5" stroke="#008" id="pc"></g>
+  <g fill="#f80" fill-opacity="0.5" stroke="#800" id="pd"></g>
  </g>
 </svg>
+<script type="text/javascript">
+  const r = 20
+  dt("heptagon8-11", null, "translate(220,40) scale(1 1)")
+
+  $("pc", pp("pc", [ 1,2,3,4,5,6,7,8,9,10,11 ]))
+  $("pd", pp("pd", [ 1,2,3,4 ]))
+
+  const r8  = () => rod(r, 8)
+  const r11 = ()=>  rod(r, 11)
+  const t8  = `translate(0 ${8*r})`
+
+  dt("pc1", r8(), `${R(+r0)}`)
+  dt("pc2", r8(), `${R(-r0)}`)
+  dt("pc3", r8(), `${R(+r0)} ${t8} ${R(-r1)}`)
+  dt("pc4", r8(), `${R(-r0)} ${t8} ${R(+r1)}`)
+  dt("pc5", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
+  dt("pc6", r8(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)}`)
+  dt("pc7", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
+
+  dt("pc8", r8(), `${R(+r2)}`)
+  dt("pc9", r8(), `${R(-r2)}`)
+  dt("pc10", r8(), `${R(+r2)} ${t8} ${R(+r1)}`)
+  dt("pc11", r8(), `${R(-r2)} ${t8} ${R(-r1)}`)
+
+  const t1 = `translate(0 ${1*r})`
+  const t7 = `translate(0 ${7*r})`
+
+  dt("pd1", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t1} ${R(-74.1)}`)
+  dt("pd2", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t7} ${R(-105.7)}`)
+
+  dt("pd3", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t1} ${R(+74.1)}`)
+  dt("pd4", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t7} ${R(+105.7)}`)
+</script>
+
 </td>
 <td>
 <pre>
              _____
-Do a = 8 and r1 r2 = 3, and get 't Hooft heptagon:
+Do a = 8 and r1 r2 = 3, to get 't Hooft heptagon:
    _____
    q1 r2 = sqrt( 9 + 7*64 / 4)
          = 11
@@ -144,106 +186,13 @@ Then (orange):
 
 
 <script type="text/javascript">
-const rod = (R, n, skip)=> {
-	const r = R/2
-	const L = 2 * n * r
-	const d  = [ 
-		"m", -r, 0,
-		"a", r, r, 0, 0, 1, +2*r, 0, "l", 0, +L,
-		"a", r, r, 0, 0, 1, -2*r, 0, "l", 0, -L,
-		"z", "m", r/2, -2*r
-	]	
-	for (let i=0; i <= n; i++) { // holes
-    d.push(...["m", 0, 2*r])
-    if (skip && (i % 2 == 1))
-      continue
-		d.push(...["a", r/2, r/2, 0, 0, 0, r, 0, r/2, r/2, 0, 0, 0, -r, 0])
-	}
-	return d.join(" ")
-}
-
-const r = 20
-const R = (r)=> { return `rotate(${r})`}
-
-const dt = (id, d, t)=> {
-	if (d) document.getElementById(id).setAttribute("d", d);
-	if (t) document.getElementById(id).setAttribute("transform", t) 	
-}
-
-{
-  const r8  = ()=> { return rod(r, 8) }
-  const r11 = ()=> { return rod(r, 11) }
-  const t8 = `translate(0 ${8*r})`
-
-  const r0 = 90 - 180/7
-  const r1 = 2 * 180/7
-  dt("heptagon1", null, "translate(220,40) scale(1 1)")
-  dt("p8a", r8(), `${R(+r0)}`)
-  dt("p8b", r8(), `${R(-r0)}`)
-  dt("p8c", r8(), `${R(+r0)} ${t8} ${R(-r1)}`)
-  dt("p8d", r8(), `${R(-r0)} ${t8} ${R(+r1)}`)
-  dt("p8e", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
-  dt("p8f", r8(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)}`)
-  dt("p8g", r8(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t8} ${R(-r1)}`)
-
-  const r2 = 90 -3*180/7
-
-  dt("p8h", r8(), `${R(+r2)}`)
-  dt("p8i", r8(), `${R(-r2)}`)
-  dt("p8j", r8(), `${R(+r2)} ${t8} ${R(+r1)}`)
-  dt("p8k", r8(), `${R(-r2)} ${t8} ${R(-r1)}`)
-
-  const t1 = `translate(0 ${1*r})`
-  const t7 = `translate(0 ${7*r})`
-
-  dt("p8l", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t1} ${R(-74.1)}`)
-  dt("p8m", r11(), `${R(+r0)} ${t8} ${R(-r1)} ${t8} ${R(-r1)} ${t7} ${R(-105.7)}`)
-
-  dt("p8n", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t1} ${R(+74.1)}`)
-  dt("p8o", r11(), `${R(-r0)} ${t8} ${R(+r1)} ${t8} ${R(+r1)} ${t7} ${R(+105.7)}`)
-}
-
-{
-  const r = 20
-  const r3 = ()=> { return rod(r, 6, true) }
-  const r4 = ()=> { return rod(r, 8, true) }
-
-  const t1 = `translate(0 ${2*r})`
-  const t2 = `translate(0 ${4*r})`
-  const t3 = `translate(0 ${6*r})`
-
-  const r0 = 90 - 180/7
-  const r1 = 2 * 180/7
-  dt("heptagon2", null, "translate(170,40) scale(1 1)")
-  dt("p3a", r3(), `${R(+r0)}`)
-  dt("p3b", r3(), `${R(-r0)}`)
-  dt("p3c", r3(), `${R(+r0)} ${t3} ${R(-r1)}`)
-  dt("p3d", r3(), `${R(-r0)} ${t3} ${R(+r1)}`)
-  dt("p3e", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
-  dt("p3f", r3(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)}`)
-  dt("p3g", r3(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t3} ${R(-r1)}`)
-
-  const r2 = 90 -3*180/7
-
-  dt("p3h", r3(), `${R(+r2)}`)
-  dt("p3i", r3(), `${R(-r2)}`)
-  dt("p3j", r3(), `${R(+r2)} ${t3} ${R(+r1)}`)
-  dt("p3k", r3(), `${R(-r2)} ${t3} ${R(-r1)}`)
-
-  dt("p4a", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t1} ${R(-82.90)}`)
-  dt("p4b", r4(), `${R(+r0)} ${t3} ${R(-r1)} ${t3} ${R(-r1)} ${t2} ${R(-97.17)}`)
-
-  dt("p4c", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t1} ${R(+82.90)}`)
-  dt("p4d", r4(), `${R(-r0)} ${t3} ${R(+r1)} ${t3} ${R(+r1)} ${t2} ${R(+97.17)}`)
-}
-
 // 7a*a + e*e = 4d*d
 // d = sqrt(7*a*a + e*e)/2
 // Euclid algorithm for Greates Common Divisor
 const gcd = (a, b)=> { return !b ? a : gcd(b, a % b) } 
 
 let c = 1
-for (let a=2; a < 10000; a++) {
+for (let a=2; a < 100; a++) {
   // e=0, e=a creates no integers
   for (let e=1; e < a; e++) {
     const d = Math.sqrt(7*a*a + e*e)/2
