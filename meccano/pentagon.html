@@ -3,92 +3,233 @@
 <head>
 <title>Meccano pentagon</title>
 <script type="text/javascript" src="meccano.js"></script>
+<script type="text/javascript" src="node/pentagon.js"></script>
 <style>
 span { color:#f80; }		
 pre { background-color: #cde; padding:10px;}
 .particular { background-color: #ff8; }
 </style>
+
+<script>
+const P1 = new Pentagon1()
+const P2 = new Pentagon2()
+</script>
+
 </head>
 <body>
+
+<h1>Pentagons</h1>
+
+<pre>
+A = 2*Math.PI/5 = <span id="A2"></span>°
+B = 1*Math.PI/5 = <span id="B2"></span>°
+
+cosA      =     ( -1 +  sqrt(5)) / 4 = <span id="cosA"></span>
+cosB      =     (  1 +  sqrt(5)) / 4 = <span id="cosB"></span>
+sinA      = sqrt( 10 + 2sqrt(5)) / 4 = <span id="sinA"></span>
+sinB      = sqrt( 10 - 2sqrt(5)) / 4 = <span id="sinB"></span>
+
+cosA*cosA =     (  3 -  sqrt(5)) / 8 = <span id="cosAcosA"></span>
+cosB*cosB =     (  3 +  sqrt(5)) / 8 = <span id="cosBcosB"></span>
+cosA*cosB =     (  1          )) / 4 = <span id="cosAcosB"></span>
+sinA*sinA =     (  5 +  sqrt(5)) / 8 = <span id="sinAsinA"></span>
+sinB*sinB =     (  5 -  sqrt(5)) / 8 = <span id="sinBsinB"></span>
+sinA*sinB =     (       sqrt(5)) / 4 = <span id="sinAsinB"></span>
+</pre>
+
+<h2>Pentagon 1</h2>
 
 <table>
 <tr>
 <td>
-<object data="inkscape/pentagon2.svg" type="image/svg+xml"></object>
+<object data="inkscape/pentagon1.svg" type="image/svg+xml"></object>
 </td>
-<td style="vertical-align: top;"><pre>
-A = 2*Math.PI/5 = <span id="A2"></span>°
-B = 1*Math.PI/5 = <span id="B2"></span>°
+<td>
+<pre>
+dx<sup>2</sup> = ((a + c)*cosA + b)<sup>2</sup>
+    = (a + c)<sup>2</sup> * cos<sup>2</sup>A
+      + 2(a + c)b * cosA
+      + b<sup>2</sup>
 
-sinA = Math.sqrt( 2 * ( 5 + Math.sqrt(5)) ) / 4
-cosA =                 ( Math.sqrt(5) - 1 ) / 4
-sinB =     Math.sqrt( 10 - 2*Math.sqrt(5) ) / 4
-cosB =                 ( Math.sqrt(5) + 1 ) / 4
+dy<sup>2</sup> = ((a - c)*sinA)<sup>2</sup>
+    = (a - c)<sup>2</sup> * sin<sup>2</sup>A
 
-a=<span id="a2"></span>, b=<span id="b2"></span>, c=<span id="c2"></span>, d=<span id="d2"></span>
+d<sup>2</sup> = dx<sup>2</sup> + dy<sup>2</sup>
+   =   (a + c)(a + c) * cos<sup>2</sup>A
+     + (a - c)(a - c) * sin<sup>2</sup>A
+     + 2(a + c)b * cosA
+     + b<sup>2</sup>
+   =   (a + c)(a + c) * (  3 -  sqrt(5)) / 8
+     + (a - c)(a - c) * (  5 +  sqrt(5)) / 8
+     + 2(a + c)b      * ( -1 +  sqrt(5)) / 4
+     + b*b
 
-bsinA=<span id="b2sinA"></span>, bcosA=<span id="b2cosA"></span>
-csinA=<span id="c2sinA"></span>, ccosA=<span id="c2cosA"></span>
-dsinB=<span id="d2sinB"></span>, dcosB=<span id="d2cosB"></span>
-
-
-e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB) = <span id="e2x"></span>
-e<sub>y</sub> = c(sinA) - b(sinA) - d(sinB) = <span id="e2y"></span>
-e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id="e2"></span>
-</pre></td>
+d*d = R*sqrt(5) + Z
+</pre>	
+</td>
 </tr>
 </table>
 
+<div>Simplification</div>
+
 <pre>
+8R = -(a + c)(a + c) + (a - c)(a - c) + 4(a + c)b
+   = 4(a + c)b - 4ac
+
+8Z = 3(a + c)(a + c) + 5(a - c)(a - c) - 4(a + c)b + 8*b*b
+
+ R = <b>[ ab - ac + cb ] / 2</b>
+ Z = <b>a*a + b*b + c*c - [ ab + ac + cb ] / 2</b>
+
+test = <span id="test"></span>
+</pre>
+
+<table>
+<tr>
+<td>
+<ul>
+<li>R should be 0</li>
+<li>Z should be square.</li>
+</ul>
+<div><button id="sol1">Solutions 1</button></div>
+<div id="sol1Message"></div>
+</td>
+<td>
+<pre id="sol1List"></pre>
+</td>
+</tr>
+</table>
+
+
+
+<script type="text/javascript">
+
+	document.getElementById("sol1").onclick = ()=> {
+		$("sol1Message", "")
+		$("sol1List",    "")
+		const solList = []
+		const message = (text)=> { $("sol1Message", text) }
+		const list = (text)=> { solList.push(text); $("sol1List", solList.join("\n")) }
+		P1.solutions(1000, message, list)		
+	}
+
+
+	const R1 = (a,b,c)=> ( a*b - a*c + c*b ) / 2
+	const Z1 = (a,b,c)=> a*a + b*b + c*c - ( a*b + a*c + c*b) / 2
+
+{
+	const a = 12, b = 3, c = 4
+	const r1 = R1(a,b,c)
+	const z1 = Z1(a,b,c)
+	$("test", `a=${a} b=${b} c=${c} R=${r1} Z=${z1}`)
+}
+
+</script>
+
+
+
+
+
+<h1>Pentagon 2</h1>
+
+<table>
+<tr>
+<td>
+<object data="inkscape/pentagons.svg" type="image/svg+xml"></object>
+</td>
+<td style="vertical-align: top;"><pre>
 e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB)
    = a + (b + c)(cosA) - d(cosB)
 e<sub>y</sub> = c(sinA) - b(sinA) - d(sinB)
    = (c - b)(sinA) - d(sinB)
 
 e<sub>x</sub><sup>2</sup> = [ a + (b + c)(cosA) - d(cosB) ]<sup>2</sup>
-    = a<sup>2</sup> + (b + c)<sup>2</sup>(cos<sup>2</sup>A) + d<sup>2</sup>cos<sup>2</sup>B
-      + 2(a)(b + c)(cosA) - 2(a)(d)(cosB) - 2(b + c)(cosA)(d)(cosB)
+    = a<sup>2</sup> 
+      + (b + c)<sup>2</sup>    * cos<sup>2</sup>A
+      + d<sup>2</sup>          * cos<sup>2</sup>B
+      + 2(a)(b + c) * cosA
+      - 2(a)(d)     * cosB
+      - 2(b + c)(d) * cosAcosB
 
 e<sub>y</sub><sup>2</sup> = [ (c - b)(sinA) - d(sinB) ]<sup>2</sup>
-    = (c - b)<sup>2</sup>(sin<sup>2</sup>B) + d<sup>2</sup>(sin<sup>2</sup>B)
-      - 2(c - b)(sin A)(d)(sinB)
-
-e<sup>2</sup> = e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>
-   = a<sup>2</sup> + d<sup>2</sup>(cos<sup>2</sup>B) + d<sup>2</sup>(sin<sup>2</sup>B)
-     + (b + c)<sup>2</sup>(cos<sup>2</sup>A) + (c - b)<sup>2</sup>(sin<sup>2</sup>B) 
-     + 2(a)(b + c)(cosA) 
-     - 2(a)(d)(cosB) 
-     - 2(b + c)(cosA)(d)(cosB)
-     - 2(c - b)(sinA)(d)(sinB)
-
-e<sup>2</sup> = A + B + C + D + E + F + G
-</pre>
-<div>Where</div>
-<table style="text-align: right; font-family: monospace;">
-<tr><td>A</td><td>=</td><td>(a<sup>2</sup> + d<sup>2</sup>)</td><td>*</td><td>1</td>    </tr>
-<tr><td>B</td><td>=</td><td>(b + c)<sup>2</sup></td><td>*</td>    <td>1(cosAcosA)</td>  </tr>
-<tr><td>C</td><td>=</td><td>(c - b)<sup>2</sup></td><td>*</td>    <td>1(sinBsinB)</td>  </tr>
-<tr><td>D</td><td>=</td><td>(a)(b + c)</td>         <td>*</td>    <td>2(cosA)</td>      </tr>
-<tr><td>E</td><td>=</td><td>(a)(d)</td>             <td>*</td>    <td>-2(cosB)</td>     </tr>
-<tr><td>F</td><td>=</td><td>(b + c)(d)</td>         <td>*</td>    <td>-2(cosAcosB)</td> </tr>
-<tr><td>G</td><td>=</td><td>(c - b)(d)</td>         <td>*</td>    <td>-2(sinAsinB)</td> </tr>
+    = (c - b)<sup>2</sup>    * sin<sup>2</sup>A
+      + d<sup>2</sup>        * sin<sup>2</sup>B
+      - 2(c - b)d * sinAsinB
+</pre></td>
+</tr>
 </table>
 
 
-
-
-</pre>	
-
 <pre>
-(cosA)(cosA) = ( 3 - sqrt(5)) / 8 = <span id="cosAcosA"></span>
-(sinB)(sinB) = ( 5 - sqrt(5)) / 8 = <span id="sinBsinB"></span>
-(cosA)(cosB) = ( 6 - sqrt(5)) / 8 = <span id="cosAcosB"></span>
-(sinA)(sinB) = ( 0 + sqrt(5)) / 4 = <span id="sinAsinB"></span>
+e<sup>2</sup> = e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>
+    = a<sup>2</sup> 
+      + (b + c)<sup>2</sup>    * ( 3 - sqrt(5)) / 8
+      + d<sup>2</sup>          * ( 3 + sqrt(5)) / 8
+      + 2(a)(b + c) * (-1 + sqrt(5)) / 4
+      - 2(a)(d)     * ( 1 + sqrt(5)) / 4
+      - 2(b + c)(d) *  1 / 4
+
+      + (c - b)<sup>2</sup>    * ( 5 + sqrt(5)) / 8
+      + d<sup>2</sup>          * ( 5 - sqrt(5)) / 8
+      - 2(c - b)d   * ( sqrt(5)) / 4
+
 </pre>
+Simplification:
+<pre>
+e*e = R*sqrt(5) + Z
+
+R = [-(b+c)<sup>2</sup> + d<sup>2</sup> + 4(a)(b+c) - 4(a)(d) + (c-b)<sup>2</sup> - d<sup>2</sup> - 4(c-b)d ] / 8
+    
+  = <b> ( (a - b)*(c - d) + a*b - c*d ) / 2 </b> = <span id="abcdRad"></span>
+
+Z = [ 8*a<sup>2</sup> + 3(b+c)<sup>2</sup> + 3d<sup>2</sup> - 4(a)(b+c) - 4(a)(d) - 4(b+c)(d) + 5(c-b)<sup>2</sup> + 5d<sup>2</sup> ] / 8
+    
+  = <b>a*a + b*b + c*c + d*d - ( (a + b)*(c + d) + a*b + c*d ) / 2</b> = <span id="abcdInt"></span>
+
+</pre>
+
+<table>
+<tr>
+<td>
+<ul>
+<li>R should be 0</li>
+<li>Z should be square.</li>
+</ul>
+<div><button id="sol2">Solutions 2</button></div>
+<div id="sol2Message"></div>
+</td>
+<td>
+<pre id="sol2List"></pre>
+</td>
+</tr>
+</table>
+</div>
+
+
+<!--div>Example:</div>
+<pre>
+a=<span id="a2"></span>, b=<span id="b2"></span>, c=<span id="c2"></span>, d=<span id="d2"></span>
+
+bsinA=<span id="b2sinA"></span>, bcosA=<span id="b2cosA"></span>
+csinA=<span id="c2sinA"></span>, ccosA=<span id="c2cosA"></span>
+dsinB=<span id="d2sinB"></span>, dcosB=<span id="d2cosB"></span>
+
+e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB) = <span id="e2x"></span>
+e<sub>y</sub> = c(sinA) - b(sinA) - d(sinB) = <span id="e2y"></span>
+e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id="e2"></span>
+</pre-->
+
 
 <script>
 {
-	const sqrt5 = (int, rad, den)=> (int + rad*Math.sqrt(5)) / den
+	document.getElementById("sol2").onclick = ()=> {
+		$("sol2Message", "")
+		$("sol2List",    "")
+		const solList = []
+		const message = (text)=> { $("sol2Message", text) }
+		const list = (text)=> { solList.push(text); $("sol2List", solList.join("\n")) }
+		P2.solutions(200, message, list)		
+	}
 
 
 	const A = 2*Math.PI/5
@@ -108,7 +249,7 @@ e<sup>2</sup> = A + B + C + D + E + F + G
 	$("A2", 180*A/Math.PI)
 	$("B2", 180*B/Math.PI)
 
-	$("a2", a)
+	/*$("a2", a)
 	$("b2", b)
 	$("c2", c)
 	$("d2", d)
@@ -120,156 +261,32 @@ e<sup>2</sup> = A + B + C + D + E + F + G
 	$("d2cosB", d*cosB)
 	$("e2x", ex)
 	$("e2y", ey)
-	$("e2", Math.sqrt(ex*ex + ey*ey))
+	$("e2", Math.sqrt(ex*ex + ey*ey))*/
 
-	$("cosAcosA", `${cosA*cosA} = ${sqrt5(3, -1, 8)}`)
-	$("sinBsinB", `${sinB*sinB} = ${sqrt5(5, -1, 8)}`)
-	$("cosAcosB", `${cosA*cosB} = ${sqrt5(1,  0, 4)}`)
-	$("sinAsinB", `${sinA*sinB} = ${sqrt5(0,  1, 4)}`)
+	$("sinA",          `${sinA} = ${ Math.sqrt(sqrt5(10,  2, 16)) }`)
+	$("sinB",          `${sinB} = ${ Math.sqrt(sqrt5(10, -2, 16)) }`)
+
+	$("cosA",          `${cosA} = ${sqrt5(-1,  1, 4)}`)
+	$("cosB",          `${cosB} = ${sqrt5( 1,  1, 4)}`)
+	$("cosAcosA", `${cosA*cosA} = ${sqrt5( 3, -1, 8)}`)
+	$("cosBcosB", `${cosB*cosB} = ${sqrt5( 3,  1, 8)}`)
+	$("cosAcosB", `${cosA*cosB} = ${sqrt5( 1,  0, 4)}`)
+
+	$("sinAsinA", `${sinA*sinA} = ${sqrt5( 5,  1, 8)}`)
+	$("sinBsinB", `${sinB*sinB} = ${sqrt5( 5, -1, 8)}`)
+	$("sinAsinB", `${sinA*sinB} = ${sqrt5( 0,  1, 4)}`)
+
+
+	$("abcdRad", P2.R(a,b,c,d))
+	$("abcdInt", P2.Z(a,b,c,d))
 }
 </script>
-
-
-
-
-
-
-
-<pre>
-                   /|
-                 -- |      x<sub>1</sub> = a * cosT
-                /  /|      y<sub>1</sub> = a * sinT
-              --   || 
-             /    / |      x<sub>2</sub> = c * cosT
-         b --     | |      y<sub>2</sub> = c * sinT
-          /      /  |
-        --       |  |
-       /        /   |      bx = x<sub>2</sub> + d + x<sub>1</sub>
-     --         |   | y1      = c*cosT + d + a*cosT
-    /          /    |         = (a + c)*cosT + d
-   |           | a  |      
-   |\         /     |      by = y<sub>1</sub> - y<sub>2</sub>   
-   || c       |     |         = a*sinT - c*sinT
-y2 | \       /      |         = (a - c)*sinT
-   |  | T T |       |
-   +---'---'--------+      
-    x2   d     x1
-
-b<sup>2</sup> = bx<sup>2</sup> + by<sup>2</sup>
-   = [ (a + c)cosT + d ]<sup>2</sup> + [ (a - c)sinT ]<sup>2</sup>
-
-   = (a<sup>2</sup> + 2ac + c<sup>2</sup>)cos<sup>2</sup>T + 2(a + c)(d)cosT + d<sup>2</sup>
-     + (a<sup>2</sup> - 2ac + c<sup>2</sup>)sin<sup>2</sup>T
-
-   = (a<sup>2</sup> + c<sup>2</sup>)(cos<sup>2</sup>T + sin<sup>2</sup>T)
-     + (2ac)(cos<sup>2</sup>T - sin<sup>2</sup>T)
-     + 2(a + c)(d)cosT + d<sup>2</sup>
-
-   = (a<sup>2</sup> + c<sup>2</sup>)(1) + (2ac)( 2cos<sup>2</sup>T - 1) + 2(a + c)(d)cosT + d<sup>2</sup>
-
-   = a<sup>2</sup> + c<sup>2</sup> + 4ac(cos<sup>2</sup>T) - 2ac + 2(a + c)(d)cosT + d<sup>2</sup>
-
-   = (a - c)<sup>2</sup> + 4ac(cos<sup>2</sup>T) + 2(a + c)(d)cosT + d<sup>2</sup>
-</pre>
-
-<pre class="particular">
-    T = 72°
- cosT = (sqrt(5) - 1) / 4 = <span id="cosT"></span>
-cos<sup>2</sup>T = (3 - sqrt(5)) / 8 = <span id="cosTcosT"></span>
-</pre>
-
-<pre>
-b<sup>2</sup> = (a - c)<sup>2</sup> + 4ac(3 - sqrt(5))/8 + 2(a + c)(d)(sqrt(5) - 1)/4 + d<sup>2</sup>
-   = (a - c)<sup>2</sup> + 3ac/2 - (a + c)*d/2 + d<sup>2</sup>
-     + sqrt(5) * <b>[ (a + c)*d - ac ] / 2</b>
-</pre>
-
-<pre class="particular">
-Example:
-   a = <span id="a"></span>, c = <span id="c"></span>, d = <span id="d"></span>
-</pre>
-<table>
-<tr>
-<td>1) Check sqrt(5) factor is zero</td>
-<td><pre>
-(a + c)d - ac = <span id="(a+c)d - ac"></span>
-</pre></td>
-</tr>
-<tr>
-<td>
-2) Find b<sup>2</sup>
-</td>
-<td><pre>
-(a - c)<sup>2</sup> + 3ac/2 - (a + c)*d/2 + d<sup>2</sup> = <span id="(a-c)2 + 3ac/2 - (a+c)d/2 + d2"></span>	
-</pre></td>
-</tr>
-<tr>
-<td>
-</td>
-<td><pre>
-Tested a < 10000 no more solutions
-a > c > 0
-a > d > 0
-</pre></td>
-</tr>
-
-
-
-</table>
-</pre>
 
 <script type="text/javascript">
-//const $ = (id, text)=> { document.getElementById(id).innerHTML = text }
-
-const factor5  = (a,c,d)=> (a + c)*d - a*c
-const diagonal = (a,c,d)=> (a-c)*(a-c) + 3*a*c/2 - (a+c)*d/2 + d*d
-
-const print = function() {
-	const cosT     = (Math.sqrt(5)-1) / 4 // Math.cos(2*Math.PI / 5)
-	const cosTcosT = (3 - Math.sqrt(5)) / 8
-	const a = 12
-	const c = 4
-	const d = 3
-
-	$("cosT", cosT)
-	$("cosTcosT", cosTcosT)
-	$("a", a)
-	$("c", c)
-	$("d", d)
-	$("(a+c)d - ac", factor5(a,c,d))
-	$("(a-c)2 + 3ac/2 - (a+c)d/2 + d2", diagonal(a,c,d))
+{
 }
-print()
-
-const saved = []
-
-const find = function() {
-	const save = (a,c,d)=> {
-		const f5 = factor5(a, c, d)
-		if (f5 != 0)
-			return
-		const sqrt = Math.sqrt(diagonal(a,c,d))
-		if (parseInt(sqrt) != sqrt)
-			return
-		for (let i=0; i < saved.length; i++) {
-			const d = saved[i]
-			if (sqrt % d == 0)
-				return
-		}
-		saved.push(sqrt)
-		console.log(`factor5=0 for a=${a} c=${c} d=${d} diagonal=${sqrt}`)
-	}
-
-	for (let a=3; a < 20; a++) {
-		for (let c=1; c <=a; c++) {
-			for (let d=1; d <=a; d++) {
-				save(a,c,d)
-			}
-		}
-	}
-}
-find()
 </script>
+
 
 
 </body>
