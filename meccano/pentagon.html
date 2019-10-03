@@ -7,7 +7,9 @@
 <style>
 span { color:#f80; }		
 pre { background-color: #cde; padding:10px;}
+i { color:red; }
 .particular { background-color: #ff8; }
+td { vertical-align: top; }
 </style>
 
 <script>
@@ -84,9 +86,11 @@ d*d = R*sqrt(5) + Z
 test = <span id="test"></span>
 </pre>
 
+
 <table>
 <tr>
 <td>
+<div>a > b > 1, a > c > 1:
 <ul>
 <li>R should be 0</li>
 <li>Z should be square.</li>
@@ -96,13 +100,8 @@ test = <span id="test"></span>
 </td>
 <td>
 <pre id="sol1List"></pre>
-</td>
-</tr>
-</table>
-
-
-
 <script type="text/javascript">
+
 
 	document.getElementById("sol1").onclick = ()=> {
 		$("sol1Message", "")
@@ -110,32 +109,28 @@ test = <span id="test"></span>
 		const solList = []
 		const message = (text)=> { $("sol1Message", text) }
 		const list = (text)=> { solList.push(text); $("sol1List", solList.join("\n")) }
-		P1.solutions(1000, message, list)		
+		P1.solutions2(2000, message, list)		
 	}
-
-
 	const R1 = (a,b,c)=> ( a*b - a*c + c*b ) / 2
 	const Z1 = (a,b,c)=> a*a + b*b + c*c - ( a*b + a*c + c*b) / 2
-
-{
-	const a = 12, b = 3, c = 4
-	const r1 = R1(a,b,c)
-	const z1 = Z1(a,b,c)
-	$("test", `a=${a} b=${b} c=${c} R=${r1} Z=${z1}`)
-}
-
+	{
+		const a = 12, b = 3, c = 4
+		const r1 = R1(a,b,c)
+		const z1 = Z1(a,b,c)
+		$("test", `a=${a} b=${b} c=${c} R=${r1} Z=${z1}`)
+	}
 </script>
+</td>
+</tr>
+</table>
 
 
-
-
-
-<h1>Pentagon 2</h1>
+<h2>Pentagon 2</h2>
 
 <table>
 <tr>
 <td>
-<object data="inkscape/pentagons.svg" type="image/svg+xml"></object>
+<object data="inkscape/pentagon2.svg" type="image/svg+xml"></object>
 </td>
 <td style="vertical-align: top;"><pre>
 e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB)
@@ -155,12 +150,7 @@ e<sub>y</sub><sup>2</sup> = [ (c - b)(sinA) - d(sinB) ]<sup>2</sup>
     = (c - b)<sup>2</sup>    * sin<sup>2</sup>A
       + d<sup>2</sup>        * sin<sup>2</sup>B
       - 2(c - b)d * sinAsinB
-</pre></td>
-</tr>
-</table>
 
-
-<pre>
 e<sup>2</sup> = e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>
     = a<sup>2</sup> 
       + (b + c)<sup>2</sup>    * ( 3 - sqrt(5)) / 8
@@ -173,7 +163,10 @@ e<sup>2</sup> = e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>
       + d<sup>2</sup>          * ( 5 - sqrt(5)) / 8
       - 2(c - b)d   * ( sqrt(5)) / 4
 
-</pre>
+</pre></td>
+</tr>
+</table>
+
 Simplification:
 <pre>
 e*e = R*sqrt(5) + Z
@@ -249,20 +242,6 @@ e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id
 	$("A2", 180*A/Math.PI)
 	$("B2", 180*B/Math.PI)
 
-	/*$("a2", a)
-	$("b2", b)
-	$("c2", c)
-	$("d2", d)
-	$("b2sinA", b*sinA)
-	$("b2cosA", b*cosA)
-	$("c2sinA", c*sinA)
-	$("c2cosA", c*cosA)
-	$("d2sinB", d*sinB)
-	$("d2cosB", d*cosB)
-	$("e2x", ex)
-	$("e2y", ey)
-	$("e2", Math.sqrt(ex*ex + ey*ey))*/
-
 	$("sinA",          `${sinA} = ${ Math.sqrt(sqrt5(10,  2, 16)) }`)
 	$("sinB",          `${sinB} = ${ Math.sqrt(sqrt5(10, -2, 16)) }`)
 
@@ -281,13 +260,140 @@ e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id
 	$("abcdInt", P2.Z(a,b,c,d))
 }
 </script>
+<div>Pentagon side 31:</div>
+<img src="inkscape/pentagons-2-31.svg" width="500"></img>
+<div>Pentagons side 38:</div>
+<img src="inkscape/pentagons-2-38.svg" width="500"></img>
 
-<script type="text/javascript">
-{
-}
-</script>
+<h2>Pentagon 3</h2>
+
+<div style="color:red;">Maybe with no solutions!</div>
+
+<table>
+<tr>
+<td>
+<object data="inkscape/pentagon3.svg" type="image/svg+xml"></object>
+</td>
+<td>
+<pre>
+fx = a*cosA + b + d*cosE
+fy = a*sinA - d*sinE
+
+fx*fx = (a*cosA + b + d*cosE)*(a*cosA + b + d*cosE)
+        +   a*a*cosA*cosA
+        +   b*b
+        +   d*d*cosE*cosE
+        + 2*a*b*cosA
+        + 2*a*d*cosA*cosE
+        + 2*b*d*cosE
+
+fy*fy = (a*sinA - d*sinE)*(a*sinA - d*sinE)
+        +   a*a*sinA*sinA
+        - 2*a*d*sinA*sinE
+        +   d*d*sinE*sinE
+
+f*f = fx*fx + fy*fy =         
+        +   a*a + b*b + d*d
+        + 2*a*cosA * b
+        + 2*a*cosA * d*cosE
+        + 2*b      * d*cosE
+        - 2*a*d    * sqrt(sinA*sinA*sinE*sinE)
+</pre>
+</td>
+</tr>
+</table>
+
+<pre>
+    cosA = (-1 + sqrt(5)) / 4
+    cosE = (c*c + d*d - e*e) / (2*c*d)
+
+2*a*cosA = a*(-1 + sqrt(5)) / 2
+  d*cosE = (c*c + d*d - e*e) / (2*c)
+
+    sinA*sinA = [ (5 + sqrt(5)) / 2 ] / 4  
+d*sinE*d*sinE = d*d - (d*cosE)*(d*cosE)
+              = d*d - (c*c + d*d - e*e)*(c*c + d*d - e*e) / (4*c*c)
+              = [ 4*c*c*d*d - (c*c + d*d - e*e)*(c*c + d*d - e*e) ] / (4*c*c)
+
+sqrt(sinA*sinA*d*sinE*d*sinE) =
+              = sqrt([ 4*c*c*d*d - (c*c + d*d - e*e)*(c*c + d*d - e*e) ] * (5 + sqrt(5)) / 2) / 2c
+
+f*f =
+    +   a*a + b*b + d*d
+    + (a*(-1 + sqrt(5))/2) * b
+    + (a*(-1 + sqrt(5))/2) * (c*c + d*d - e*e) / (2*c)
+    + 2*b                  * (c*c + d*d - e*e) / (2*c)
+    - 2*a * sqrt( sinA*sinA * sinE*sinE*d*d )
+
+</pre>
+
+<table>
+<tr>
+<td>
+<pre>
+8*fx*fx = 
+  +  8*a*a*(3 - sqrt(5))/8
+  +  8*b*b
+  +  8*d*d*(c*c + d*d - e*e)*(c*c + d*d - e*e) / (4*c*c*d*d)
+  + 16*a*b*((-1 + sqrt(5)) / 4)
+  + 16*a*d*((-1 + sqrt(5)) / 4)*(c*c + d*d - e*e) / (2*c*d)
+  + 16*b*d*(c*c + d*d - e*e) / (2*c*d)
+
+  = 
+  +1*a*a*(3 - sqrt(5))
+  + 8*b*b
+  + 2*(c*c + d*d - e*e)*(c*c + d*d - e*e) / (c*c)
+  + 4*a*b*(-1 + sqrt(5))
+  + 2*a*(-1 + sqrt(5))*(c*c + d*d - e*e) / c
+  + 8*b*(c*c + d*d - e*e) / c
+
+8*fx*fx = 8*fxz + 8*fxr*sqrt(5)
+
+8*fxz 
+  = 
+  + 3*a*a
+  + 8*b*b
+  + 2*(c*c + d*d - e*e)*(c*c + d*d - e*e) / (c*c)
+  - 4*a*b*
+  - 2*a*(c*c + d*d - e*e) / c
+  + 8*b*(c*c + d*d - e*e) / c
+  = <b>
+  + 3*a*a* - 4*a*b* + 8*b*b
+  + 2*(c*c + d*d - e*e)*(c*c + d*d - e*e) / (c*c)
+  - 2*a*(c*c + d*d - e*e) / c
+  + 8*b*(c*c + d*d - e*e) / c
+    </b>
+8*fxr = <b>
+  - 1*a*a
+  + 4*a*b
+  + 2*a*(c*c + d*d - e*e) / c
+    </b>
+</pre>
+</td>
+
+<td>
+<pre>
+8*fy*fy =
+  +   a*a*(5 + sqrt(5))
+  - 16*a*d*sinA*sinE
+  +  8*d*d*( 4*c*c*d*d - (c*c + d*d - e*e)*(c*c + d*d - e*e)) / (4*c*c*d*d)
+  = 
+  +   a*a*(5 + sqrt(5))
+  - 16*a*d*sinA*sinE
+  +  2*(4*c*c*d*d - (c*c + d*d - e*e)*(c*c + d*d - e*e)) / (c*c)
+  = 
+  +   a*a*(5 + sqrt(5))
+  - <i>16*a*d*sinA*sinE</i>
+  +  8*d*d
+  -  2*(c*c + d*d - e*e)*(c*c + d*d - e*e) / (c*c)
 
 
+
+
+</pre>
+</td>
+</tr>
+</table>
 
 </body>
 </html>

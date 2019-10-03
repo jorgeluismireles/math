@@ -8,16 +8,28 @@ const Pentagon1 = function()
 
 	const self = this
 
-	this.solutions = (aMax, message, list)=> { console.log("aMax", aMax)
+	this.solutions1 = (aMax, message, list)=> { // a > b
 		const sols = []
 		const now = +new Date()
 		for (let a=1; a < aMax; a++) {
-			for (let b=1; b < a; b++)
-				for (let c=0; c < a; c++)
+			for (let b=1; b <= a; b++)
+				for (let c=0; c <= a; c++)
 					test(list, sols, a, b, c)
 		}
 		message(`Tested ${aMax} : ${+new Date() - now}ms`)
 	}
+	
+	this.solutions2 = (bMax, message, list)=> { // b > a
+		const sols = []
+		const now = +new Date()
+		for (let b=1; b < bMax; b++) {
+			for (let a=1; a <= b; a++)
+				for (let c=0; c <= b; c++)
+					test(list, sols, a, b, c)
+		}
+		message(`Tested ${aMax} : ${+new Date() - now}ms`)
+	}
+	
 	const test = (list, sols, a, b, c)=> {
 		if (self.R(a, b, c) != 0)
 			return
