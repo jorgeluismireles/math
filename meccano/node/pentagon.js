@@ -8,23 +8,12 @@ const Pentagon1 = function()
 
 	const self = this
 
-	this.solutions1 = (aMax, message, list)=> { // a > b
+	this.solutions = (aMax, message, list)=> { // b > a
 		const sols = []
 		const now = +new Date()
 		for (let a=1; a < aMax; a++) {
-			for (let b=1; b <= a; b++)
+			for (let b=1; b <= aMax; b++)
 				for (let c=0; c <= a; c++)
-					test(list, sols, a, b, c)
-		}
-		message(`Tested ${aMax} : ${+new Date() - now}ms`)
-	}
-	
-	this.solutions2 = (bMax, message, list)=> { // b > a
-		const sols = []
-		const now = +new Date()
-		for (let b=1; b < bMax; b++) {
-			for (let a=1; a <= b; a++)
-				for (let c=0; c <= b; c++)
 					test(list, sols, a, b, c)
 		}
 		message(`Tested ${aMax} : ${+new Date() - now}ms`)
@@ -74,8 +63,8 @@ const Pentagon2 = function()
 		const sols = []
 		const now = +new Date()
 		for (let a=1; a < aMax; a++) {
-			for (let c=1; c < a; c++)
-				for (let b=1; b < c; b++)
+			for (let b=1; b < a; b++)
+				for (let c=1; c < a; c++)
 					for (let d=1; d < a; d++)
 						test(list, sols, a, b, c, d)
 		}
@@ -108,10 +97,12 @@ const Pentagon2 = function()
 			}
 		}
 		sols.push( { a:a, b:b, c:c, d:d, e:e })
-		return `n=${sols.length} a=${a} b=${b} c=${c} d=${d} e=${e}`
+		const n = sols.length
+		console.log(`n=${n} e=${Math.sqrt(a*a + b*b + c*c + d*d - a*d - b*c - c*d) }`)
+		return `n=${n} a=${a} b=${b} c=${c} d=${d} e=${e}`
 	}
 
-
+	/*
 	const test1 = (a,b,c,d)=>
 		a*a 
 		+ (b + c)*(b + c) * sqrt5( 3, -1, 8) // cosA*cosA //
@@ -132,7 +123,6 @@ const Pentagon2 = function()
 	const test3 = (a,b,c,d)=> //-(b+c)*(b+c) + d*d + 4*a*(b+c) - 4*a*d + (c-b)*(c-b) - d*d - 4*(c-b)*d
 	              //( a*(b + c - d) - b*(c - d) - c*d  ) / 2
 	              ( (a - b)*(c - d) + a*b - c*d ) / 2
-
-
+	*/
 }
 

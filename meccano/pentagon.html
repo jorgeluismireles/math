@@ -10,6 +10,7 @@ pre { background-color: #cde; padding:10px;}
 i { color:red; }
 .particular { background-color: #ff8; }
 td { vertical-align: top; }
+tt { background-color: #abc; padding:3px;}
 </style>
 
 <script>
@@ -82,35 +83,37 @@ d*d = R*sqrt(5) + Z
 
  R = <b>[ ab - ac + cb ] / 2</b>
  Z = <b>a*a + b*b + c*c - [ ab + ac + cb ] / 2</b>
-
-test = <span id="test"></span>
 </pre>
-
 
 <table>
 <tr>
+<td>In order sqrt(5) vanishes, R should be zero or</td>  
+<td><tt>ab + cb = ac</tt></td>
+</tr> 
+<tr>
+<td>In order d is integer, d*d should be square or</td>
+<td><tt>d*d = a*a + b*b + c*c - ac</tt></td>  
+</tr>
+<tr>
 <td>
-<div>a > b > 1, a > c > 1:
-<ul>
-<li>R should be 0</li>
-<li>Z should be square.</li>
-</ul>
-<div><button id="sol1">Solutions 1</button></div>
-<div id="sol1Message"></div>
+<button id="sol1">Solutions 1</button><span id="sol1Mess"></span>
 </td>
 <td>
 <pre id="sol1List"></pre>
+</td>
+</tr>
+</table>
+
 <script type="text/javascript">
-
-
 	document.getElementById("sol1").onclick = ()=> {
-		$("sol1Message", "")
-		$("sol1List",    "")
+		$("sol1Mess", "Test 1000")
+		$("sol1List", "")
 		const solList = []
-		const message = (text)=> { $("sol1Message", text) }
+		const message = (text)=> { $("sol1Mess", text) }
 		const list = (text)=> { solList.push(text); $("sol1List", solList.join("\n")) }
-		P1.solutions2(2000, message, list)		
+		P1.solutions(1000, message, list)		
 	}
+  /*
 	const R1 = (a,b,c)=> ( a*b - a*c + c*b ) / 2
 	const Z1 = (a,b,c)=> a*a + b*b + c*c - ( a*b + a*c + c*b) / 2
 	{
@@ -118,7 +121,7 @@ test = <span id="test"></span>
 		const r1 = R1(a,b,c)
 		const z1 = Z1(a,b,c)
 		$("test", `a=${a} b=${b} c=${c} R=${r1} Z=${z1}`)
-	}
+	}*/
 </script>
 </td>
 </tr>
@@ -178,52 +181,39 @@ R = [-(b+c)<sup>2</sup> + d<sup>2</sup> + 4(a)(b+c) - 4(a)(d) + (c-b)<sup>2</sup
 Z = [ 8*a<sup>2</sup> + 3(b+c)<sup>2</sup> + 3d<sup>2</sup> - 4(a)(b+c) - 4(a)(d) - 4(b+c)(d) + 5(c-b)<sup>2</sup> + 5d<sup>2</sup> ] / 8
     
   = <b>a*a + b*b + c*c + d*d - ( (a + b)*(c + d) + a*b + c*d ) / 2</b> = <span id="abcdInt"></span>
-
 </pre>
+
+
 
 <table>
 <tr>
+<td>In order sqrt(5) vanishes, R should be zero or</td>  
+<td><tt>a(b+c) + bd = c(b + d) + bc</tt></td>
+</tr> 
+<tr>
+<td>In order e is integer, e*e should be square or</td>
+<td><tt>e*e = a*a + b*b + c*c + d*d - ad - bc - cd</tt></td>  
+</tr>
+<tr>
 <td>
-<ul>
-<li>R should be 0</li>
-<li>Z should be square.</li>
-</ul>
-<div><button id="sol2">Solutions 2</button></div>
-<div id="sol2Message"></div>
+<button id="sol2">Solutions 2</button><span id="sol2Mess"></span>
 </td>
 <td>
 <pre id="sol2List"></pre>
 </td>
 </tr>
 </table>
-</div>
-
-
-<!--div>Example:</div>
-<pre>
-a=<span id="a2"></span>, b=<span id="b2"></span>, c=<span id="c2"></span>, d=<span id="d2"></span>
-
-bsinA=<span id="b2sinA"></span>, bcosA=<span id="b2cosA"></span>
-csinA=<span id="c2sinA"></span>, ccosA=<span id="c2cosA"></span>
-dsinB=<span id="d2sinB"></span>, dcosB=<span id="d2cosB"></span>
-
-e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB) = <span id="e2x"></span>
-e<sub>y</sub> = c(sinA) - b(sinA) - d(sinB) = <span id="e2y"></span>
-e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id="e2"></span>
-</pre-->
-
 
 <script>
 {
 	document.getElementById("sol2").onclick = ()=> {
-		$("sol2Message", "")
-		$("sol2List",    "")
+		$("sol2Mess", "...")
+		$("sol2List", "...")
 		const solList = []
-		const message = (text)=> { $("sol2Message", text) }
+		const message = (text)=> { $("sol2Mess", text) }
 		const list = (text)=> { solList.push(text); $("sol2List", solList.join("\n")) }
-		P2.solutions(200, message, list)		
+		P2.solutions(300, message, list)		
 	}
-
 
 	const A = 2*Math.PI/5
 	const B = 1*Math.PI/5
@@ -260,10 +250,21 @@ e = Math.sqrt( e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>) = <span id
 	$("abcdInt", P2.Z(a,b,c,d))
 }
 </script>
-<div>Pentagon side 31:</div>
+<div>Pentagons side 31:</div>
 <img src="inkscape/pentagons-2-31.svg" width="500"></img>
 <div>Pentagons side 38:</div>
 <img src="inkscape/pentagons-2-38.svg" width="500"></img>
+
+<div>Pentagons side 48:</div>
+<pre>
+n= 7 a=48 b= 8 c=24 d=21 e=41
+n= 8 a=48 b=12 c= 9 d=20 e=41
+n= 9 a=48 b=27 c=24 d=40 e=41
+n=10 a=48 b=28 c=39 d=36 e=41
+</pre>
+<img src="inkscape/pentagons-2-48.svg" width="800"></img>
+
+
 
 <h2>Pentagon 3</h2>
 
