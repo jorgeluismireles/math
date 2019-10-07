@@ -58,48 +58,8 @@ const Octagon = function()
 			+ (a*a + cb)*d / a                              // 2*a2(a,b,c)*d
 	}
 }
-</script>
 
-
-
-</head>
-<body>
-<div id="svg">
-</div>
-</body>
-
-<script>
-
-const _ = new Octagon()
-
-
-
-
-
-
-const a=3, b=4, c=5, d=1, e=2, f=6
-//const a=3, b=5, c=4, d=4, e=2, f=6
-
-const S = Math.sqrt(2)/2
-
-const points = {
-	s0: { x: 0/*-e*/,  y: 0 },
-	s1: { x: a+d, y: 0 },
-	ab: { x:          0, y:          0 },
-	ac: { x:          a, y:          0 },
-	bc: { x:_.a1(a,b,c), y:_.ay(a,b,c) },
-	ef: { x: a+d+e*S,    y: e*S        }
-}
-
-
-const colors = {
-	a: "#f20",
-	b: "#02f",
-	c: "#0f2",
-	f: "#f20"
-}
-
-const Build = function(points, colors)
+const Build = function(id, points, colors, svg)
 {
 	const lines = (support)=> {
 		const line = (p1, p2, stroke)=> {
@@ -137,27 +97,109 @@ const Build = function(points, colors)
 		const g8 = octand(g7)
 	}
 
-	const svg = new SvgContainer({
+	const s = new SvgContainer({
 		xmlns:"http://www.w3.org/2000/svg",
-		width: 400,
-		height:400
+		width: svg.width,
+		height:svg.width
 	})
-	document.getElementById("svg").appendChild(svg)
+	document.getElementById(id).appendChild(s)
 
 	const g1 = new Group({ 
-		transform:`translate(180 344) scale(30 -30)`,
-		"stroke-width":"0.15px",
+		transform:`translate(${svg.tx} ${svg.ty}) scale(${svg.scale} -${svg.scale})`,
+		"stroke-width":`${svg.strokeWidth}px`,
 		"stroke-linecap": "round"
 	})
-	svg.appendChild(g1)
+	s.appendChild(g1)
 }
 
-const build = new Build(points, colors)
+</script>
+
+</head>
+<body>
+<div id="svg1"></div>
+<div id="svg2"></div>
+<div id="svg3"></div>
+</body>
+
+<script>
+const _ = new Octagon()
+const S = Math.sqrt(2)/2
+
+const a=3, b=4, c=5, d=1, e=2, f=6
+
+const points1 = {
+	s0: { x: 0/*-e*/,  y: 0 },
+	s1: { x: a+d, y: 0 },
+	ab: { x:          0, y:          0 },
+	ac: { x:          a, y:          0 },
+	bc: { x:_.a1(a,b,c), y:_.ay(a,b,c) },
+	ef: { x: a+d+e*S,    y: e*S        }
+}
+const colors1 = {
+	a: "#02f",
+	b: "#02f",
+	c: "#0f2",
+	f: "#f20"
+}
+new Build("svg1", points1, colors1, {
+	width:  400,
+	height: 400,
+	tx: 140,
+	ty: 340,
+	scale: 20,
+	strokeWidth: 0.15
+}).octagon(points1.s1)
 
 
-const t = points.s1//ef
-build.octagon(t)
+const points2 = {
+	s0: { x: -1,  y: 0 },
+	s1: { x: a+d, y: 0 },
+	ab: { x:          0, y:          0 },
+	ac: { x:          a, y:          0 },
+	bc: { x:_.a1(a,b,c), y:_.ay(a,b,c) },
+	ef: { x: a+d+e*S,    y: e*S        }
+}
+const colors2 = {
+	a: "#0f2",
+	b: "#02f",
+	c: "#0f2",
+	f: "#f20"
+}
+new Build("svg2", points2, colors2, {
+	width:  400,
+	height: 400,
+	tx: 140,
+	ty: 340,
+	scale: 20,
+	strokeWidth: 0.35
+}).octagon({ x:a+d+1*S, y:1*S })
 
+
+const points3 = {
+	s0: { x: -e,  y: 0 },
+	s1: { x: a+d, y: 0 },
+	ab: { x:          0, y:          0 },
+	ac: { x:          a, y:          0 },
+	bc: { x:_.a1(a,b,c), y:_.ay(a,b,c) },
+	ef: { x: a+d+e*S,    y: e*S        }
+}
+const colors3 = {
+	a: "#f20",
+	b: "#02f",
+	c: "#0f2",
+	f: "#f20"
+}
+new Build("svg3", points3, colors3, {
+	width: 400,
+	height: 400,
+	tx: 180,
+	ty: 340,
+	scale:20,
+	strokeWidth: 1
+}).octagon(points3.ef)
+
+
+//const a=3, b=5, c=4, d=4, e=2, f=6
 
 
 
