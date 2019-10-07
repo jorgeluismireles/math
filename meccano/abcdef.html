@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>abcdef</title>
+<style>
+span { color:#08f; }
+.input { width:50px; }
+</style>
+<script>
+
+const a1 = (a,b,c)=> ( a*a + b*b - c*c ) / (2*a)
+
+const a2 = (a,b,c)=> ( a*a + c*c - b*b ) / (2*a)
+
+const ay = (a,b,c)=> {
+  const cb = c*c - b*b
+  return Math.sqrt( a*a * (2*b*b + 2*c*c - a*a) - cb*cb ) / (2*a)
+}
+
+const f1 = (a,b,c,d,e)=> {
+  const S = Math.sqrt(2)
+  const fxfx = // ( a2(a,b,c) + d + e*S )^2
+               a2(a,b,c)*a2(a,b,c) + d*d + 2*e*e + 2*a2(a,b,c)*d // integer
+               + 2*a2(a,b,c)*e*S + 2*d*e*S                       // rational
+  const fyfy = // ( -ay(a,b,c) + e*S )^2 
+               ay(a,b,c)*ay(a,b,c) + 2*e*e // integer
+               -2*ay(a,b,c)*e*S            // rational
+  return Math.sqrt(fxfx + fyfy)
+}
+
+const octagonRadical = (a,b,c,d)=> {
+  const cb = c*c - b*b
+  const r =  (a*a + cb)                                       // 2*a*a2(a,b,c) 
+            + 2*a*d                                           // 2*a*d
+            - Math.sqrt(a*a * (2*b*b + 2*c*c - a*a) - cb*cb ) // 2*a*ay(a,b,c)
+  return r
+}
+
+const octagonInteger = (a,b,c,d,e)=> {
+  const cb = c*c - b*b
+  const i =                 (a*a + cb)*(a*a + cb) / (4*a*a) // a2(a,b,c)*a2(a,b,c) 
+            + (a*a*(2*b*b + 2*c*c - a*a) - cb*cb) / (4*a*a) // ay(a,b,c)*ay(a,b,c) 
+            + d*d + 4*e*e 
+            + (a*a + cb)*d / a                              // 2*a2(a,b,c)*d
+  return i
+}
+
+
+const f2 = (a,b,c,d,e)=> {
+  const S = Math.sqrt(2)
+  const cb = c*c - b*b
+
+  const i =                 (a*a + cb)*(a*a + cb) / (4*a*a) // a2(a,b,c)*a2(a,b,c) 
+            + (a*a*(2*b*b + 2*c*c - a*a) - cb*cb) / (4*a*a) // ay(a,b,c)*ay(a,b,c) 
+            + d*d + 4*e*e 
+            + (a*a + cb)*d / a                              // 2*a2(a,b,c)*d
+
+  const r =  (a*a + cb)                                       // 2*a*a2(a,b,c) 
+            + 2*a*d                                           // 2*a*d
+            - Math.sqrt(a*a * (2*b*b + 2*c*c - a*a) - cb*cb ) // 2*a*ay(a,b,c)
+
+  return Math.sqrt(i + S*r*e / a)
+}
+const $ = (id) => document.getElementById(id)
+</script>
+
+
+
+</head>
+
+
+<body>
+
+</body>
+
+<table>
+<tr>
+<td>
+<img src="inkscape/abcdef.svg" width="300"></img>
+</td>
+<td>
+<pre>
+ cosB = ( a^2 + c^2 - b^2 ) / (2ac)
+   a2 = cosB * c
+      = ( a^2 + c^2 - b^2 ) / (2a)
+</pre>
+<pre>
+a1 = <span id="a1"></span>
+a2 = <span id="a2"></span>
+ay = <span id="ay"></span>
+f1 = <span id="f1"></span>
+f2 = <span id="f2"></span>
+</pre>
+</td>
+</tr>
+</table>
+
+<div>
+<span>a = <input type="number" id="number-a" class="input" value="1"></span>
+<span>b = <input type="number" id="number-b" class="input" value="1"></span>
+<span>c = <input type="number" id="number-c" class="input" value="1"></span>
+<span>a1 = <input type=text id="number-a1" readonly /></span>
+<span>a2 = <input type=text id="number-a2" readonly /></span>
+<span>ay = <input type=text id="number-ay" readonly /></span>
+</div>
+
+<dl>
+<dt>Octagon</dt>
+<dd>
+<pre>
+S = sqrt(2)
+sinE = cosE = S
+fx = a2 + d + e*cosE = ( a^2 + c^2 - b^2 ) / (2a) + d + eS
+fy =   - ay + e*sinE = eS - sqrt( a^2(2b^2 + 2c^2 - a^2) - (c^2 - b^2)^2 ) / (2a)
+</pre>
+<div>
+<span>d = <input type="number" id="number-d" class="input" value="1"></span>
+<span>e = <input type="number" id="number-e" class="input" value="1"></span>
+<span>f1 = <input type=text id="number-f1" readonly /></span>
+<span>f2 = <input type=text id="number-f2" readonly /></span>
+
+<pre>
+f^2 = fx^2 + fy^2
+    = (a^2 + c^2 - b^2)^2 / (4a^2) + d^2 + 2e^2
+      + (a^2 + c^2 - b^2)d / a
+      + (a^2 + c^2 - b^2)eS / (2a)
+      + deS
+
+      + 2e^2 
+      - 2eS*sqrt( a^2(2b^2 + 2c^2 - a^2) - (c^2 - b^2)^2 ) / (2a)
+      ( a^2(2b^2 + 2c^2 - a^2) - (c^2 - b^2)^2 ) / (4a^2)
+</pre>
+</dd>
+
+</dl>
+
+
+<pre>
+  fx = a2 + d + e*cosE
+  fy = e*sinE - ay
+
+ f*f = fx*fx + fy*fy
+
+     =    (a2 + d + e*cosE) * (a2 + d + e*cosE)
+        + (e*sinE - ay ) * (e*sinE - ay)
+
+     =   a2*a2 + d*d + <b>e*e*cosE*cosE</b>
+       + 2*a2*d + 2*a2*e*cosE + 2*d*e*cosE
+       + <b>e*e*sinE*sinE</b> - 2*ay*e*sinE + <b>ay*ay</b>
+
+f*f = a2*a2 + d*d + <span>e*e</span>
+      + 2*a2*d 
+      + <b>2*a2*e*cosE + 2*d*e*cosE</b>
+      - 2*ay*e*sinE + <span>c*c - a2*a2</span>
+
+    = c*c + d*d + e*e + <b>2*a2*d</b>
+      + <span>2*e*cosE * <b>(d + a2)</b></span>
+      + 2*d*e*cosE 
+      - 2*ay*e*sinE
+
+    = c*c + d*d + e*e + <span>d * ( a*a + c*c - b*b ) / a</span>
+      + 2*e*cosE * <span>( d + ( a*a + c*c - b*b ) / (2*a)) )</span>
+      - 2*ay*e*sinE
+
+    = c*c + d*d + (a*a + c*c - b*b)*(d/a) + e*e
+      + e*cosE * ( <b>2*a*d + a*a + c*c - b*b</b> ) / a
+      - 2*e*sinE * ay
+</pre>
+
+<script>
+const update_abc = ()=> {
+	const a = parseInt($("number-a").value)
+	const b = parseInt($("number-b").value)
+	const c = parseInt($("number-c").value)
+	$("number-a1").value = a1(a,b,c)
+	$("number-a2").value = a2(a,b,c)
+	$("number-ay").value = ay(a,b,c)
+}
+
+const update_f = ()=> {
+	const a = parseInt($("number-a").value)
+	const b = parseInt($("number-b").value)
+	const c = parseInt($("number-c").value)
+	const d = parseInt($("number-d").value)
+	const e = parseInt($("number-e").value)
+	$("number-f1").value = f1(a,b,c,d,e)
+	$("number-f2").value = f2(a,b,c,d,e)
+}
+
+$("number-a").onchange = update_abc
+$("number-b").onchange = update_abc	
+$("number-c").onchange = update_abc	
+
+$("number-d").onchange = update_f
+$("number-e").onchange = update_f
+
+update_abc()
+update_f()
+
+$("a1").innerHTML = a1
+$("a2").innerHTML = a2
+$("ay").innerHTML = ay
+$("f1").innerHTML = f1
+$("f2").innerHTML = f2
+
+
+
+/*
+const bbb = (a,c,d)=> 2*a*c*c/d - c*c - 2*a*d - 2*a*a
+for (let A=1; A < 20; A++) {
+	for (let C=1; C < 20; C++) {
+		for (let D=1; D < 20; D++) {
+			const B = bbb(A,C,D)
+			if (Number.isInteger(B) && B > 0) {
+				const b = Math.sqrt(B)
+				if (parseInt(b) == b) {
+
+					for (let E=1; E < 20; E++) {
+						const f = f1(A,b,C,D,E)
+						console.log(`a=${A} b=${b} c=${C} d=${D} e=${E} f=${f}`)
+					}
+
+
+				}
+			}
+		}
+	}
+}*/
+const max = 30
+for (let a = 1; a < max; a ++) {
+	for (let b = 1; b < max; b++) {
+		for (let c = 1; c < max; c++) {
+			if (b >= (a+c)) continue;
+			if (c >= (a+b)) continue;
+			for (let d = 0; d < max; d++) {
+				const r = octagonRadical(a,b,c,d)
+				if (r == 0) {
+					for (let e=1; e < max; e++) {
+						const F = octagonInteger(a,b,c,d,e)
+						const f = Math.sqrt(F)
+						if (parseInt(f) == f)
+							console.log(`a=${a} b=${b} c=${c} d=${d} e=${e} f=${f}`)
+					}
+				}
+			}
+		}
+	}
+}
+
+</script>
+</html>
+
+
+
+

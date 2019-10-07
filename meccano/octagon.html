@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<style>
+svg { border:1px solid gray; }
+</style>
+
+<script>
+
+function Group(obj){
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    for(prop in obj)
+        g.setAttribute(prop, obj[prop])  
+    return g
+}
+
+function Line(obj){
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    for(prop in obj) {
+        line.setAttribute(prop, obj[prop])  
+    }
+    return line;
+}
+
+function SvgContainer(obj) {
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for(prop in obj) {
+        svg.setAttribute(prop, obj[prop])  
+    }
+    return svg;
+}
+
+
+const Octagon = function()
+{
+	this.a1 = (a,b,c)=> ( a*a + b*b - c*c ) / (2*a)
+
+	this.a2 = (a,b,c)=> ( a*a + c*c - b*b ) / (2*a)
+
+	this.ay = (a,b,c)=> {
+		const cb = c*c - b*b
+  		return Math.sqrt( a*a * (2*b*b + 2*c*c - a*a) - cb*cb ) / (2*a)
+	}
+
+	this.radical = (a,b,c,d)=> {
+		const cb = c*c - b*b
+		return (a*a + cb)                                     // 2*a*a2(a,b,c) 
+			+ 2*a*d                                           // 2*a*d
+			- Math.sqrt(a*a * (2*b*b + 2*c*c - a*a) - cb*cb ) // 2*a*ay(a,b,c)
+	}
+
+	this.integer = (a,b,c,d,e)=> {
+		const cb = c*c - b*b
+		return (a*a + cb)*(a*a + cb) / (4*a*a)              // a2(a,b,c)*a2(a,b,c) 
+			+ (a*a*(2*b*b + 2*c*c - a*a) - cb*cb) / (4*a*a) // ay(a,b,c)*ay(a,b,c) 
+	        + d*d + 4*e*e 
+			+ (a*a + cb)*d / a                              // 2*a2(a,b,c)*d
+	}
+}
+</script>
+
+
+
+</head>
+<body>
+<div id="svg">
+</div>
+</body>
+
+<script>
+
+const _ = new Octagon()
+
+
+
+
+
+
+const a=3, b=4, c=5, d=1, e=2, f=6
+//const a=3, b=5, c=4, d=4, e=2, f=6
+
+const S = Math.sqrt(2)/2
+
+const points = {
+	s0: { x: 0/*-e*/,  y: 0 },
+	s1: { x: a+d, y: 0 },
+	ab: { x:          0, y:          0 },
+	ac: { x:          a, y:          0 },
+	bc: { x:_.a1(a,b,c), y:_.ay(a,b,c) },
+	ef: { x: a+d+e*S,    y: e*S        }
+}
+
+
+const colors = {
+	a: "#f20",
+	b: "#02f",
+	c: "#0f2",
+	f: "#f20"
+}
+
+const Build = function(points, colors)
+{
+	const lines = (support)=> {
+		const line = (p1, p2, stroke)=> {
+			return Line({ 
+				x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y, opacity:0.6, stroke:stroke
+			})
+		}
+		const l = [ 
+			line(points.s0, points.s1, colors.a)  // e_a_d
+		]
+		if (support) {
+			l.push(line(points.ab, points.bc, colors.b)) // b
+			l.push(line(points.bc, points.ac, colors.c)) // c
+			l.push(line(points.bc, points.ef, colors.f)) // f
+		}
+		return l
+	}
+
+	this.octagon = (t)=> {
+		const octand = (before, support)=> {
+			const next = new Group({ transform:`translate(${t.x} ${t.y}) rotate(45)`})
+			lines(support).forEach(line => { next.appendChild(line) })
+			before.appendChild(next)
+			return next
+		}
+		lines(true).forEach(line => { 
+			g1.appendChild(line) 
+		})
+		const g2 = octand(g1, true)
+		const g3 = octand(g2, true)
+		const g4 = octand(g3, true)
+		const g5 = octand(g4, true)
+		const g6 = octand(g5)
+		const g7 = octand(g6)
+		const g8 = octand(g7)
+	}
+
+	const svg = new SvgContainer({
+		xmlns:"http://www.w3.org/2000/svg",
+		width: 400,
+		height:400
+	})
+	document.getElementById("svg").appendChild(svg)
+
+	const g1 = new Group({ 
+		transform:`translate(180 344) scale(30 -30)`,
+		"stroke-width":"0.15px",
+		"stroke-linecap": "round"
+	})
+	svg.appendChild(g1)
+}
+
+const build = new Build(points, colors)
+
+
+const t = points.s1//ef
+build.octagon(t)
+
+
+
+
+/*{
+	const max = 30
+	for (let a = 1; a < max; a ++) {
+		for (let b = 1; b < max; b++) {
+			for (let c = 1; c < max; c++) {
+				if (b >= (a+c)) continue;
+				if (c >= (a+b)) continue;
+				for (let d = 0; d < max; d++) {
+					const r = _.radical(a,b,c,d)
+					if (r == 0) {
+						for (let e=1; e < max; e++) {
+							const F = _.integer(a,b,c,d,e)
+							const f = Math.sqrt(F)
+							if (parseInt(f) == f)
+								console.log(`a=${a} b=${b} c=${c} d=${d} e=${e} f=${f}`)
+						}
+					}
+				}
+			}
+		}
+	}
+}*/
+</script>
+
+
+
+
+</html>
