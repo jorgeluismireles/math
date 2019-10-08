@@ -1,36 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title></title>
+<title>Octagon</title>
+<script src="svg.js"></script>
 <style>
 svg { border:1px solid gray; }
 </style>
 
 <script>
-
-function Group(obj){
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-    for(prop in obj)
-        g.setAttribute(prop, obj[prop])  
-    return g
-}
-
-function Line(obj){
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    for(prop in obj) {
-        line.setAttribute(prop, obj[prop])  
-    }
-    return line;
-}
-
-function SvgContainer(obj) {
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    for(prop in obj) {
-        svg.setAttribute(prop, obj[prop])  
-    }
-    return svg;
-}
-
+const Svg = new SVG()
 
 const Octagon = function()
 {
@@ -63,7 +41,7 @@ const Build = function(id, points, colors, svg)
 {
 	const lines = (support)=> {
 		const line = (p1, p2, stroke)=> {
-			return Line({ 
+			return Svg.line({ 
 				x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y, opacity:0.6, stroke:stroke
 			})
 		}
@@ -80,7 +58,7 @@ const Build = function(id, points, colors, svg)
 
 	this.octagon = (t)=> {
 		const octand = (before, support)=> {
-			const next = new Group({ transform:`translate(${t.x} ${t.y}) rotate(45)`})
+			const next = Svg.g({ transform:`translate(${t.x} ${t.y}) rotate(45)`})
 			lines(support).forEach(line => { next.appendChild(line) })
 			before.appendChild(next)
 			return next
@@ -97,14 +75,10 @@ const Build = function(id, points, colors, svg)
 		const g8 = octand(g7)
 	}
 
-	const s = new SvgContainer({
-		xmlns:"http://www.w3.org/2000/svg",
-		width: svg.width,
-		height:svg.width
-	})
+	const s = Svg.svg(svg.width, svg.height)
 	document.getElementById(id).appendChild(s)
 
-	const g1 = new Group({ 
+	const g1 = Svg.g({ 
 		transform:`translate(${svg.tx} ${svg.ty}) scale(${svg.scale} -${svg.scale})`,
 		"stroke-width":`${svg.strokeWidth}px`,
 		"stroke-linecap": "round"

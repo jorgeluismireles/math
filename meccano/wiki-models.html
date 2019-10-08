@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wiki models</title>
+<style>
+svg { border:1px solid gray; }
+</style>
+<script src="svg.js"></script>
+<script src="meccano.js"></script>
+</head>
+<body>
+<table>
+<tr><td>Width</td><td><input type="number" value="400" id="width"></td></tr>
+<tr><td>Height</td><td><input type="number" value="400" id="height"></td></tr>	
+<tr><td><button id="octagon">Octagon</button></td>
+</table>
+<div id="svg">
+</div>
+</body>
+<script>
+const $elem  = (id)=> document.getElementById(id)
+const $value = (id)=> $elem(id).value
+
+document.getElementById("octagon").onclick = ()=> {
+	const svg = {
+		width:  parseInt($value("width")),
+		height: parseInt($value("height"))
+	}
+	const Svg = new SVG()
+	const s = Svg.svg(svg.width, svg.width)
+	$elem("svg").appendChild(s)
+
+	const tx = svg.width/2
+	const ty = svg.height/2
+	const scale = 3
+	const strokeWidth = 0.2
+	const g0 = Svg.g({ 
+		transform:`translate(${tx} ${ty}) scale(${scale} -${scale})`,
+		"stroke-width":`${strokeWidth}px`,
+		"stroke-linecap": "round",
+		"stroke":"#00f",
+	})
+	s.appendChild(g0)
+
+	const g4 = Svg.g({ "fill":"#ff0" })
+	const g5 = Svg.g({ "fill":"#f80" })
+	g0.appendChild(g4)
+	g0.appendChild(g5)
+
+	const p = {
+		opacity: 0.5
+	}
+
+	const svgRod = (R, n, t)=> {
+		return Svg.path(rod(R, n), t, { opacity: 0.5 })
+	}
+
+	const S = 8
+	const C = S*Math.sqrt(4 + 2*Math.sqrt(2))/2 // circumradius
+	const rods_4 = []
+	const rods_5 = []
+	for (let i=0; i < 8; i++) {
+		const rt1 = `rotate(${-45*i}) translate(0 ${4*C})`
+		const r2 = -90-22.5
+		rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2})`))
+		if (i==0) { // north
+			const r3 = 180*Math.acos(4/5)/Math.PI
+			rods_5.push(svgRod(S, 5, `${rt1} rotate(${r2 - r3})`))
+			rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2 - 90})`))
+		}
+		if (i==1) { // north-east
+			rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2 - 45})`))
+		}
+		if (i==3) {
+			const r3 = `rotate(${r2 - 90})`
+			rods_4.push(svgRod(S, 4, `${rt1} ${r3}`))
+			const t2 = `translate(0 ${4*S}) rotate(90)`
+			rods_5.push(svgRod(S, 5, `${rt1} ${r3} ${t2}`))
+
+		}
+	}
+	rods_4.forEach(r => { g4.appendChild(r) })
+	rods_5.forEach(r => { g5.appendChild(r) })
+}
+</script>
+
+</html>
