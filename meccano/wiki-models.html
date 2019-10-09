@@ -28,24 +28,26 @@ document.getElementById("octagon").onclick = ()=> {
 	}
 	const Svg = new SVG()
 	const s = Svg.svg(svg.width, svg.width)
-	$elem("svg").appendChild(s)
+	const xml = $elem("svg").appendChild(s)
 
 	const tx = svg.width/2
 	const ty = svg.height/2
-	const scale = 3
-	const strokeWidth = 0.2
+	const scale = 4
+	const strokeWidth = 0.3
 	const g0 = Svg.g({ 
-		transform:`translate(${tx} ${ty}) scale(${scale} -${scale})`,
+		transform:`translate(${tx} ${ty}) scale(${scale} -${scale}) rotate(22.5)`,
 		"stroke-width":`${strokeWidth}px`,
 		"stroke-linecap": "round",
 		"stroke":"#00f",
 	})
 	s.appendChild(g0)
 
-	const g4 = Svg.g({ "fill":"#ff0" })
-	const g5 = Svg.g({ "fill":"#f80" })
+	const g4 = Svg.g({ "fill":"#08f" })
+	const g5 = Svg.g({ "fill":"#0f4" })
+	const g6 = Svg.g({ "fill":"#f20" })
 	g0.appendChild(g4)
 	g0.appendChild(g5)
+	g0.appendChild(g6)
 
 	const p = {
 		opacity: 0.5
@@ -57,30 +59,52 @@ document.getElementById("octagon").onclick = ()=> {
 
 	const S = 8
 	const C = S*Math.sqrt(4 + 2*Math.sqrt(2))/2 // circumradius
-	const rods_4 = []
-	const rods_5 = []
+	const r4 = []
+	const r5 = []
+	const r6 = []
+	const acos4_5 = 180*Math.acos(4/5)/Math.PI
+	const asin2_6 = 180*Math.asin(2/6)/Math.PI
+	const push4 = (t)=> { r4.push(svgRod(S, 4, t)) }
+	const push5 = (t)=> { r5.push(svgRod(S, 5, t)) }
+	const push6 = (t)=> { r6.push(svgRod(S, 6, t)) }
 	for (let i=0; i < 8; i++) {
 		const rt1 = `rotate(${-45*i}) translate(0 ${4*C})`
 		const r2 = -90-22.5
-		rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2})`))
+		push4(`${rt1} rotate(${r2})`)
 		if (i==0) { // north
-			const r3 = 180*Math.acos(4/5)/Math.PI
-			rods_5.push(svgRod(S, 5, `${rt1} rotate(${r2 - r3})`))
-			rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2 - 90})`))
+			push4(`${rt1} rotate(${r2 - 90})`)
+			push5(`${rt1} rotate(${r2 - acos4_5})`)
 		}
 		if (i==1) { // north-east
-			rods_4.push(svgRod(S, 4, `${rt1} rotate(${r2 - 45})`))
+			push4(`${rt1} rotate(${r2 - 45})`)
 		}
 		if (i==3) {
-			const r3 = `rotate(${r2 - 90})`
-			rods_4.push(svgRod(S, 4, `${rt1} ${r3}`))
-			const t2 = `translate(0 ${4*S}) rotate(90)`
-			rods_5.push(svgRod(S, 5, `${rt1} ${r3} ${t2}`))
-
+			const t3a = `${rt1} rotate(${r2 - 90})`
+			const t3b = `translate(0 ${4*S}) rotate(${180 - acos4_5})`
+			const t3c = `translate(0 ${4*S}) rotate(${180 - 45 - asin2_6})`
+			push4(`${t3a}`)
+			push5(`${t3a} ${t3b}`)
+			push6(`${t3a} ${t3c}`)
+		}
+		if (i==6) {
+			const t6a = `${rt1} rotate(${r2 - 45})`
+			const t6b = `translate(0 ${4*S}) rotate(${180 + acos4_5})`
+			const t6c = `translate(0 ${4*S}) rotate(${180 + 45 + asin2_6})`
+			push4(`${t6a}`)
+			push5(`${t6a} ${t6b}`)
+			push6(`${t6a} ${t6c}`)
 		}
 	}
-	rods_4.forEach(r => { g4.appendChild(r) })
-	rods_5.forEach(r => { g5.appendChild(r) })
+	r4.forEach(r => { g4.appendChild(r) })
+	r5.forEach(r => { g5.appendChild(r) })
+	r6.forEach(r => { g6.appendChild(r) })
+
+	let a = document.createElement("a")
+	let filename = "meccano_octagon.svg"
+	a.download = a.textContent = "meccano_octagon.svg"
+	const app = `data:application/xml,<?xml version="1.0" encoding="UTF-8"?>`
+	a.href = `${app}${encodeURIComponent(s.outerHTML)}`
+	document.body.append(a)
 }
 </script>
 
