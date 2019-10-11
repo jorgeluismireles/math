@@ -7,105 +7,282 @@ svg { border:1px solid gray; }
 </style>
 <script src="svg.js"></script>
 <script src="meccano.js"></script>
+<script>
+const $elem  = (id)=> document.getElementById(id)
+const $value = (id)=> $elem(id).value
+const $integer = (id)=> parseInt($value(id))
+const $float = (id)=> parseFloat($value(id))
+
+const svgParams = ()=> {
+	return {
+		width:       $integer("width"),
+		height:      $integer("height"),
+		scale:       $float("scale"),
+		rotate:      $float("rotation"),
+		strokeWidth: $float("stroke-width")
+	}
+}
+
+const Polygon = function(p, name, S, rods, skip, extremes)
+{
+	const Svg = new SVG()
+
+	const xml = $elem("svg")
+	xml.innerHTML = ""
+	const s = Svg.svg(p.width, p.height)
+	xml.appendChild(s)
+	xml.appendChild(document.createElement("br"))
+	let a = document.createElement("a")
+	let filename = `${name}.svg`
+	a.download = `${name}.svg`
+	a.textContent = `Download ${name}.svg`
+	const app = `data:application/xml,<?xml version="1.0" encoding="UTF-8"?>`
+	a.href = `${app}${encodeURIComponent(s.outerHTML)}`
+	xml.append(a)
+	const tx = p.width/2
+	const ty = p.height/2
+	const scale = p.scale || "1"
+	const rotate = p.rotate || "0"
+	const strokeWidth = p.strokeWidth || 0.3
+	const g0 = Svg.g({ 
+		transform:`translate(${tx} ${ty}) scale(${scale} -${scale}) rotate(${rotate})`,
+		"stroke-width":`${strokeWidth}px`,
+		"stroke-linecap": "round",
+		"stroke":"#000",
+	})
+	s.appendChild(g0)
+
+	const g = {}
+	const r = {}
+	Object.keys(rods).forEach($r => {
+		const n = $r.toString()
+		const fill = rods[$r] // if string
+		g[n] = Svg.g({ fill:fill })
+		g0.append(g[n])
+		r[n] = []
+	})
+
+	const svgRod = (R, n, t)=> {
+		return Svg.path(rod(R, n, skip, extremes), t, { opacity: 0.5 })
+	}
+
+	this.rods = (n, next)=> {
+		for (let i=0; i < n; i++) {
+			next(i, (id, t)=> {
+				r[id.toString()].push(svgRod(S, id, t))		
+			})
+		}
+		Object.keys(r).forEach(k => {
+			r[k].forEach(r => {
+				g[k].append(r)
+			})
+		})
+	}
+}
+</script>
 </head>
 <body>
 <table>
-<tr><td>Width</td><td><input type="number" value="400" id="width"></td></tr>
-<tr><td>Height</td><td><input type="number" value="400" id="height"></td></tr>	
-<tr><td><button id="octagon">Octagon</button></td>
+<tr><td>Width</td>       <td><input type="number" value="400" id="width"></td></tr>
+<tr><td>Height</td>      <td><input type="number" value="400" id="height"></td></tr>	
+<tr><td>Scale</td>       <td><input type="number" value="1" id="scale"></td></tr>
+<tr><td>Rotation</td>    <td><input type="number" value="0" id="rotation"></td></tr>
+<tr><td>Stroke width</td><td><input type="number" value="0.3" id="stroke-width"></td></tr>
+<tr><td>
+<select id="select"></select>
+</td>
+<td>
+<button id="create">Create</button>
+</tr>
 </table>
 <div id="svg">
 </div>
 </body>
 <script>
-const $elem  = (id)=> document.getElementById(id)
-const $value = (id)=> $elem(id).value
+const polygons = 
+{
+	triangle: ()=> {
+		const p = svgParams()
+		const name = "meccano_triangle"
+		const S = 60
+		const extremes = true
+		const G = new Polygon(p, name, S, {
+			4: "#08f"
+		}, false, extremes)
+		const C = (4/2)*S / Math.sin(Math.PI/3)
+		G.rods(3, (i, rod)=> {
+			const t1 = `rotate(${-120*i}) translate(0 ${C})`
+			rod(4, `${t1} rotate(150)`)
+		})
+	},
 
-document.getElementById("octagon").onclick = ()=> {
-	const svg = {
-		width:  parseInt($value("width")),
-		height: parseInt($value("height"))
+	square1: ()=> {
+		const p = svgParams()
+		const name = "meccano_square"
+		const S = 50
+		const G = new Polygon(p, name, S, {
+			4: "#08f",
+			5: "#f20"
+		})
+		const C = 4*S*Math.sqrt(2)/2 // circuncenter
+		const acos4_5 = 180*Math.acos(4/5)/Math.PI
+
+		G.rods(4, (i, rod)=> {
+			const t1 = `rotate(${-90*i}) translate(0 ${C})`
+			rod(4, `${t1} rotate(${-90-45})`)
+			if (i==0) {
+				rod(5, `${t1} rotate(${-90-45-acos4_5})`)
+			}
+		})
+	},
+
+	pentagon1: ()=> {
+		const p = svgParams()
+		const name = "meccano_pentagon"
+		const S = 16
+		const G = new Polygon(p, name, S, {
+			 9: "#08f",
+			11: "#0f4",
+			12: "#f20"
+		})
+		const C = 12*S/(2*Math.sin(Math.PI/5))
+
+		G.rods(5, (i, rod)=> {
+			const rt1 = `rotate(${-72*i}) translate(0 ${C})`
+			const r2 = -90-36
+			rod(12, `${rt1} rotate(${r2})`)
+			if (i==0) {
+				const rt2 = (m)=> `rotate(${-m*36}) translate(${m*4*S},0) rotate(${m*(90+72)})`
+				rod( 9, `${rt1} ${rt2(-1)}`)
+				rod( 9, `${rt1} ${rt2(+1)}`)
+				rod(11, `${rt1} ${rt2(-1)} translate(0, ${9*S}) rotate(-64.4)`)
+				rod(11, `${rt1} ${rt2(+1)} translate(0, ${9*S}) rotate(+64.4)`)
+			}
+		})
+	},
+
+	hexagon: ()=> {
+		const p = svgParams()
+		const name = "meccano_hexagon"
+		const S = 70
+		const skip = true
+		const G = new Polygon(p, name, S, {
+			2: "#08f",
+			4: "#f20"
+		}, skip)
+		const C = 2*S
+		G.rods(6, (i, rod)=> {
+			const t1 = `rotate(${-60*i}) translate(0 ${C})`
+			rod(2, `${t1} rotate(120)`)
+			if (i==0 || i==1) {
+				rod(4, `${t1} rotate(180)`)
+			}
+		})
+	},
+
+	heptagon: ()=> {
+		const p = svgParams()
+		const name = "meccano_heptagon"
+		const S = 25
+		const skip = true
+		const G = new Polygon(p, name, S, {
+			6: "#08f",
+			8: "#f20"
+		}, skip)
+		const C = 6*S / (2*Math.sin(Math.PI/7))
+		const R = 180*(Math.PI/7)/Math.PI
+		const a1 = +90+3*R
+		const a4 = 180*Math.atan(1/8)/Math.PI
+		G.rods(7, (i, rod)=> {
+			const t1 = `rotate(${-2*R*i}) translate(0 ${C})`
+			rod(6, `${t1} rotate(${90+R})`)
+			if (i==0 || i==1 || i==2) {
+				const t2 = `translate(0 ${6*S}) rotate(${-2*R})`
+				rod(6, `${t1} rotate(${a1})`)
+				rod(6, `${t1} rotate(${a1}) ${t2}`)
+				rod(8, `${t1} rotate(${a1}) ${t2} rotate(${(9*R/2) + a4})`)
+				rod(8, `${t1} rotate(${a1}) ${t2} rotate(${(9*R/2) - a4})`)
+			}
+		})
+	},
+
+	octagon1: ()=> {
+		const p = svgParams()
+		const name = "meccano_octagon"
+		const S = 30
+		const G = new Polygon(p, name, S, {
+			4: "#08f",
+			5: "#0f4",
+			6: "#f20"
+		})
+		const C = 4*S*Math.sqrt(4 + 2*Math.sqrt(2))/2 // circumradius
+		const r4 = [], r5 = [], r6 = []
+		const acos4_5 = 180*Math.acos(4/5)/Math.PI
+		const asin2_6 = 180*Math.asin(2/6)/Math.PI
+
+		G.rods(8, (i, rod)=> {
+			const rt1 = `rotate(${-45*i}) translate(0 ${C})`
+			const r2 = -90-22.5
+			rod(4, `${rt1} rotate(${r2})`)
+			if (i==0) { // north
+				rod(4, `${rt1} rotate(${r2 - 90})`)
+				rod(5, `${rt1} rotate(${r2 - acos4_5})`)
+			}
+			if (i==1) { // north-east
+				rod(4, `${rt1} rotate(${r2 - 45})`)
+			}
+			if (i==3) {
+				const t3a = `${rt1} rotate(${r2 - 90})`
+				const t3b = `translate(0 ${4*S}) rotate(${180 - acos4_5})`
+				const t3c = `translate(0 ${4*S}) rotate(${180 - 45 - asin2_6})`
+				rod(4, `${t3a}`)
+				rod(5, `${t3a} ${t3b}`)
+				rod(6, `${t3a} ${t3c}`)
+			}
+			if (i==6) {
+				const t6a = `${rt1} rotate(${r2 - 45})`
+				const t6b = `translate(0 ${4*S}) rotate(${180 + acos4_5})`
+				const t6c = `translate(0 ${4*S}) rotate(${180 + 45 + asin2_6})`
+				rod(4, `${t6a}`)
+				rod(5, `${t6a} ${t6b}`)
+				rod(6, `${t6a} ${t6c}`)
+			}
+		})
+	},
+	nonagon: ()=> {
+		const p = svgParams()
+		const name = "meccano_nonagon"
+		const S = 20
+		const extremes = true
+		const G = new Polygon(p, name, S, {
+			6: "#08f"
+		}, false, extremes)
+		const C = 6*S / (2*Math.sin(Math.PI/9))
+		G.rods(9, (i, rod)=> {
+			const t1 = `rotate(${-40*i}) translate(0 ${C})`
+			rod(6, `${t1} rotate(110)`)
+			rod(6, `${t1} rotate(150)`)
+			rod(6, `${t1} rotate(210)`)
+			rod(6, `${t1} rotate(210) translate(0 ${6*S}) rotate(-120)`)
+		})
 	}
-	const Svg = new SVG()
-	const s = Svg.svg(svg.width, svg.width)
-	const xml = $elem("svg").appendChild(s)
-
-	const tx = svg.width/2
-	const ty = svg.height/2
-	const scale = 4
-	const strokeWidth = 0.3
-	const g0 = Svg.g({ 
-		transform:`translate(${tx} ${ty}) scale(${scale} -${scale}) rotate(22.5)`,
-		"stroke-width":`${strokeWidth}px`,
-		"stroke-linecap": "round",
-		"stroke":"#00f",
-	})
-	s.appendChild(g0)
-
-	const g4 = Svg.g({ "fill":"#08f" })
-	const g5 = Svg.g({ "fill":"#0f4" })
-	const g6 = Svg.g({ "fill":"#f20" })
-	g0.appendChild(g4)
-	g0.appendChild(g5)
-	g0.appendChild(g6)
-
-	const p = {
-		opacity: 0.5
-	}
-
-	const svgRod = (R, n, t)=> {
-		return Svg.path(rod(R, n), t, { opacity: 0.5 })
-	}
-
-	const S = 8
-	const C = S*Math.sqrt(4 + 2*Math.sqrt(2))/2 // circumradius
-	const r4 = []
-	const r5 = []
-	const r6 = []
-	const acos4_5 = 180*Math.acos(4/5)/Math.PI
-	const asin2_6 = 180*Math.asin(2/6)/Math.PI
-	const push4 = (t)=> { r4.push(svgRod(S, 4, t)) }
-	const push5 = (t)=> { r5.push(svgRod(S, 5, t)) }
-	const push6 = (t)=> { r6.push(svgRod(S, 6, t)) }
-	for (let i=0; i < 8; i++) {
-		const rt1 = `rotate(${-45*i}) translate(0 ${4*C})`
-		const r2 = -90-22.5
-		push4(`${rt1} rotate(${r2})`)
-		if (i==0) { // north
-			push4(`${rt1} rotate(${r2 - 90})`)
-			push5(`${rt1} rotate(${r2 - acos4_5})`)
-		}
-		if (i==1) { // north-east
-			push4(`${rt1} rotate(${r2 - 45})`)
-		}
-		if (i==3) {
-			const t3a = `${rt1} rotate(${r2 - 90})`
-			const t3b = `translate(0 ${4*S}) rotate(${180 - acos4_5})`
-			const t3c = `translate(0 ${4*S}) rotate(${180 - 45 - asin2_6})`
-			push4(`${t3a}`)
-			push5(`${t3a} ${t3b}`)
-			push6(`${t3a} ${t3c}`)
-		}
-		if (i==6) {
-			const t6a = `${rt1} rotate(${r2 - 45})`
-			const t6b = `translate(0 ${4*S}) rotate(${180 + acos4_5})`
-			const t6c = `translate(0 ${4*S}) rotate(${180 + 45 + asin2_6})`
-			push4(`${t6a}`)
-			push5(`${t6a} ${t6b}`)
-			push6(`${t6a} ${t6c}`)
-		}
-	}
-	r4.forEach(r => { g4.appendChild(r) })
-	r5.forEach(r => { g5.appendChild(r) })
-	r6.forEach(r => { g6.appendChild(r) })
-
-	let a = document.createElement("a")
-	let filename = "meccano_octagon.svg"
-	a.download = a.textContent = "meccano_octagon.svg"
-	const app = `data:application/xml,<?xml version="1.0" encoding="UTF-8"?>`
-	a.href = `${app}${encodeURIComponent(s.outerHTML)}`
-	document.body.append(a)
 }
+const create = ()=> {
+	const polygon = document.getElementById("select").value
+	polygons[polygon].call()
+}
+const select = document.getElementById("select")
+Object.keys(polygons).forEach(key => {
+	const option = document.createElement("option")
+	option.name = key
+	option.innerHTML = key
+	select.appendChild(option)
+})
+document.getElementById("create").onclick = ()=> { create() }
+const inputs = [ "width","height","scale","rotation","stroke-width"]
+inputs.forEach(i => {
+	document.getElementById(i).onchange = ()=> { create() }
+})
 </script>
 
 </html>
