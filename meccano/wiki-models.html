@@ -103,54 +103,130 @@ const rtr = (r1,t,r2)=> `rotate(${r1}) translate(0 ${t || 0}) rotate(${r2 || 0})
 
 const polygons = 
 {
-	braced_square_2: ()=> {
+	braced_decagon: ()=> {
 		const p = svgParams()
-		const name = "braced_square_2"
-		const S = 10
+		p.center_x = 4.5
+		p.center_y = 1.7
+		const name = "braced_decagon"
+		const S = 12
 		const N = 8
-		const T = S*N
 		const extremes = true
-		colors = [ ".1", ".2" ]
-		const G = new Polygon(p, name, S, {
-			"8.1": "#08f",
-			"8.2": "#f80"
-		}, false, extremes)
 
-		const AB = rtr(-180+45)
-		const BC = rtr(-180+45, T, -90)
-		const AD = rtr(0)
+		const colors = {}
+		colors[N.toString()] = "#08f"
+		const G = new Polygon(p, name, S, colors, false, extremes)
+		const C = S*N*Math.sqrt((5-Math.sqrt(5))/10)
+		const TR = r=> `translate(0 ${S*N}) rotate(${r})`
+		G.rods(5, (i, rod)=> {
+			rod(N, rtr(72*i, -C, +18))
+			const t1 = rtr(72*i, -C, 180+54)
+			if (i == 0 || i == 1 || i == 2)
+				rod(N, t1)
+			if (i == 1 || i == 2 || i == 3)
+				rod(N, rtr(72*i, -C, 180-54))
+			if (i == 0)
+				rod(N, `${t1} ${TR(+72)}`)
+			if (i == 1)
+				rod(N, `${t1} ${TR(-108)}`)
+			
+			if (i == 3) { // up
+				const ta = rtr(72*i, -C, 90)
+				rod(N, ta)
+				rod(N, `${ta} ${TR(-72)}`)
+				rod(N, `${ta} ${TR(+36)}`)
+				const tb = `${rtr(72*i, -C, 180-54)} ${TR(-36)}`
+				rod(N, `${tb}`)
+				rod(N, `${tb} ${TR(-36)}`)
+				rod(N, `${tb} ${TR(-36)} ${TR(-36)}`)
+				rod(N, `${tb} ${TR(-72)}`)
+				rod(N, `${tb} ${TR(-72)} ${TR(+36)}`)
+				rod(N, `${tb} ${TR(-72)} ${TR(-72)}`)
+			}
 
-		const angle = 180*Math.atan(1/Math.sqrt(2))/Math.PI
+			if (i == 2) {
+				const tc = rtr(72*i, -C, 180-54)
+				rod(N, `${tc} ${TR(0)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(+72)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(+72)} ${TR(-144)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(-72)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(-72)} ${TR(+144)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(-72)} ${TR(-72)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(-72)} ${TR(-108)}`)
+				rod(N, `${tc} ${TR(0)} ${TR(-72)} ${TR(-72)} ${TR(-36)}`)
+			}
 
-		const BE = rtr(-180+45, T, -90+60)
-		const BF = rtr(-180+45, T, -90+120)
-		const BG = rtr(-180+45, T, -90+180)
-
-		const EC = `${BE} translate(0 ${T}) rotate(-120)`
-		const EF = `${BE} translate(0 ${T}) rotate(+120)`
-
-		const GF = `${BG} translate(0 ${T}) rotate(-120)`
-		const GI = `${BG} translate(0 ${T}) rotate(${135-angle+30})`
-		const GH = `${BG} translate(0 ${T}) rotate(${135-angle-30})`
-		const HI = `${GH} translate(0 ${T}) rotate(+120)`
-		const ID = `${GH} translate(0 ${T}) rotate(+60)`
-		const DH = `${ID} translate(0 ${T}) rotate(+120)`
-
-		const rods = {
-			".1": [ AD, BE, BF, BG, EC, EF, GF, GI, GH, HI, ID, DH ],
-			".2": [ AB, BC ],
-		}
-
-		colors.forEach(c => {
-			G.rods(rods[c].length, (i, rod)=> {
-				rod(N + c, rods[c][i])
-			})
 		})
-
-
 	},
 
+	braced_pentagon: ()=> {
+		const p = svgParams()
+		p.center_x = 3.5
+		p.center_y = 2.5
+		const name = "pentagram_1"
+		const S = 20
+		const N = 8
+		const extremes = true
 
+		const colors = {}
+		colors[N.toString()] = "#08f"
+		const G = new Polygon(p, name, S, colors, false, extremes)
+		const C = S*N*Math.sqrt((5-Math.sqrt(5))/10)
+		G.rods(5, (i, rod)=> {
+			rod(N, rtr(72*i, -C, +18))
+			const t1 = rtr(72*i, -C, 180+54)
+			if (i == 0 || i == 1)
+				rod(N, t1)
+			if (i == 1 || i == 2)
+				rod(N, rtr(72*i, -C, 180-54))
+			if (i == 0)
+				rod(N, `${t1} translate(0 ${S*N}) rotate(72)`)
+			if (i == 1)
+				rod(N, `${t1} translate(0 ${S*N}) rotate(-108)`)
+		})
+	},
+
+	pentagram_1: ()=> {
+		const p = svgParams()
+		const name = "pentagram_1"
+		const S = 14
+		const N = 8
+		const extremes = true
+
+		const colors = {}
+		colors[N.toString()] = "#08f"
+		const G = new Polygon(p, name, S, colors, false, extremes)
+		const C = S*N*Math.sqrt((5-Math.sqrt(5))/10)
+		G.rods(5, (i, rod)=> {
+			rod(N, rtr(72*i, -C, +18))
+			rod(N, rtr(72*i, -C, 180+54))
+			rod(N, rtr(72*i, -C, 180-54))
+		})
+	},
+
+	braced_decagon_irregular: ()=> {
+		const p = svgParams()
+		const name = "braced_decagon_irregular"
+		const S = 14
+		const N = 8
+		const extremes = true
+
+		const colors = {}
+		colors[N.toString()] = "#08f"
+		const G = new Polygon(p, name, S, colors, false, extremes)
+		const C = S*N*Math.sqrt((5-Math.sqrt(5))/10)
+		G.rods(5, (i, rod)=> {
+			const a = (a)=> rtr(72*i, -C, a)
+			rod(N, a(+18))
+			rod(N, a(+78))
+			rod(N, a(-78))
+			const b = `${a(+78)} translate(0 ${S*N}) rotate(${30+73})`
+			rod(N, b)
+			rod(N, `${a(+78)} translate(0 ${S*N}) rotate(${30-73})`)
+
+			rod(N, `${b} translate(0 ${S*N}) rotate(${-37+109})`)
+			rod(N, `${b} translate(0 ${S*N}) rotate(${-37-109})`)
+		})
+	},
 
 	braced_square_1: ()=> {
 		const p = svgParams()
@@ -217,6 +293,64 @@ const polygons =
 			})
 		})
 	},
+
+
+	braced_square_2: ()=> {
+		const p = svgParams()
+		p.center_x = 2
+		p.center_y = 2.5
+		const name = "braced_square_2"
+		const S = 18
+		const N = 6
+		const T = S*N
+		const extremes = true
+		colors = [ ".1", ".2" ]
+		const G = new Polygon(p, name, S, {
+			"6.1": "#08f",
+			"6.2": "#f20"
+		}, false, extremes)
+
+		const angle = 180*Math.atan(1/Math.sqrt(2))/Math.PI
+		const tr = a => `translate(0 ${T}) rotate(${a})`
+
+		const AD = rtr(0)
+
+		const rods = {
+			".1": [ AD ],
+			".2": [ ],
+		}
+		const pair = [ +1, -1 ]
+		pair.forEach(i => {
+			rods[".2"].push(...[
+				rtr(i*(-180+45)), // AB
+				rtr(i*(-180+45), T, i*-90) // BC
+			])
+			const BE = rtr((-180+45)*i, T, (-90+60)*i)
+			const BG = rtr((-180+45)*i, T, (-90+180)*i)
+			const GH = `${BG} ${tr((135-angle-30)*i)}`
+			const ID = `${GH} ${tr(+60*i)}`
+
+			rods[".1"].push(...[
+				BE,
+				rtr((-180+45)*i, T, (-90+120)*i), // BF
+				BG,
+				`${BE} ${tr(-120*i)}`, // EC
+				`${BE} ${tr(+120*i)}`, // EF
+				`${BG} ${tr(-120*i)}`, // GF
+				`${BG} ${tr((135-angle+30)*i)}`, // GI
+				GH,
+				`${GH} ${tr(+120*i)}`, // HI
+				ID,
+				`${ID} ${tr(+120*i)}` // DH
+			])
+		})
+		colors.forEach(c => {
+			G.rods(rods[c].length, (i, rod)=> {
+				rod(N + c, rods[c][i])
+			})
+		})
+	},
+
 
 	tetradecagon: ()=> {
 		const p = svgParams()
@@ -359,7 +493,7 @@ const polygons =
 			const rt1 = `rotate(${-72*i}) translate(0 ${C})`
 			const r2 = -90-36
 			rod(12, `${rt1} rotate(${r2})`)
-			if (i==0) {
+			if (i==4) {
 				const rt2 = (m)=> `rotate(${-m*36}) translate(${m*4*S},0) rotate(${m*(90+72)})`
 				rod( 9, `${rt1} ${rt2(-1)}`)
 				rod( 9, `${rt1} ${rt2(+1)}`)

@@ -2,12 +2,89 @@
 <html>
 <head>
 	<title>Nonagon</title>
+    <script src="svg.js"></script>
     <script type="text/javascript" src="meccano.js"></script>
 	<style>
-span { color:#f80; }		
+span { color:#f80; }
+.c1 { stroke:#f00; }		
+.c2 { stroke:#f60; }
+.c3 { stroke:#fa0; }
+.c4 { stroke:#ee0; }
+.c5 { stroke:#0a0; }
+.c6 { stroke:#0aa; }
+.c7 { stroke:#08f; }
+.c8 { stroke:#00f; }
+.c9 { stroke:#f0f; }
 	</style>
 </head>
 <body>
+
+<div id="ninths"></div>
+<br/>
+<script>
+
+const ninth = (ga, c, r)=> {
+    const m = 0.5
+    const h = Math.sqrt(3)/2
+    const a = (60 - r)*Math.PI/180
+    const x = Math.cos(a)
+    const y = Math.sin(a)
+
+    const A = { x:0, y:0 }
+    const B = { x:1, y:0 }
+    const C = { x:m, y:h }
+    const D = { x:B.x + x, y: y }
+    const E = { x:D.x - m, y: y+h }
+
+    const L = []
+    const line = (p1, p2)=> { 
+        L.push({ x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y, "class":c }) 
+    }
+
+
+
+    line(A, B)
+    line(B, C)
+    line(C, A)
+    line(C, E)
+    line(E, D)
+
+    L.forEach(l => {
+        ga.appendChild(Svg.line(l))
+    })
+    const gb = Svg.g({ 
+        transform:`translate(1 0) rotate(${-r})`,
+    })
+    ga.appendChild(gb)
+    return gb
+}
+
+const Svg = new SVG()
+const S = 600
+const s = Svg.svg(S, S)
+const g0 = Svg.g({ 
+    transform:`translate(${S/2} ${S/2}) scale(${60} -${60}) rotate(${0})`,
+    "stroke-width":`${0.1}px`,
+    "stroke-linecap": "round",
+    "stroke":"#000",
+})
+s.appendChild(g0)
+
+{
+    const a = 360/7.5
+    const g1 = ninth(g0, "c1", a)
+    const g2 = ninth(g1, "c2", a)
+    const g3 = ninth(g2, "c3", a)
+    const g4 = ninth(g3, "c4", a)
+    const g5 = ninth(g4, "c5", a)
+    const g6 = ninth(g5, "c6", a)
+    const g7 = ninth(g6, "c7", a)
+    const g8 = ninth(g7, "c8", a)
+    const g9 = ninth(g8, "c9", a)
+}
+document.getElementById("ninths").appendChild(s)
+
+</script>
 
 <svg xmlns="http://www.w3.org/2000/svg" width="440" height="440" style="border:1px solid gray;">
  <g id="nonagon1">
