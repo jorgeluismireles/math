@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Meccano pentagon</title>
+  <title>Meccano pentagon</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+
 <script type="text/javascript" src="meccano.js"></script>
 <script type="text/javascript" src="node/pentagon.js"></script>
 <style>
@@ -11,200 +19,244 @@ i { color:red; }
 .particular { background-color: #ff8; }
 td { vertical-align: top; }
 tt { background-color: #abc; padding:3px;}
+.inline { display: inline-block; text-align: top; }
+#p1-code, #p2-code { font-size: 10px; }
 </style>
 
-<script>
-const P1 = new Pentagon1()
-const P2 = new Pentagon2()
-</script>
 
 </head>
 <body>
 
-<h1>Pentagons</h1>
+<div>
+<a href="https://www.mathjax.org/#gettingstarted">mathjax.org</a>
+</div>
+</div>
 
-<pre>
-A = 2*Math.PI/5 = <span id="A2"></span>°
-B = 1*Math.PI/5 = <span id="B2"></span>°
+<h1>Meccano regular pentagons</h1>
+<div>
+<a href="http://www.staff.science.uu.nl/~hooft101/lectures/meccano.pdf">Gerard ’t Hooft meccano mathematics</a>
 
-cosA      =     ( -1 +  sqrt(5)) / 4 = <span id="cosA"></span>
-cosB      =     (  1 +  sqrt(5)) / 4 = <span id="cosB"></span>
-sinA      = sqrt( 10 + 2sqrt(5)) / 4 = <span id="sinA"></span>
-sinB      = sqrt( 10 - 2sqrt(5)) / 4 = <span id="sinB"></span>
+<h2>Pentagons angles</h2>
+<div>
+Two angles identify a regular pentagon:
+\begin{align*}
 
-cosA*cosA =     (  3 -  sqrt(5)) / 8 = <span id="cosAcosA"></span>
-cosB*cosB =     (  3 +  sqrt(5)) / 8 = <span id="cosBcosB"></span>
-cosA*cosB =     (  1          )) / 4 = <span id="cosAcosB"></span>
-sinA*sinA =     (  5 +  sqrt(5)) / 8 = <span id="sinAsinA"></span>
-sinB*sinB =     (  5 -  sqrt(5)) / 8 = <span id="sinBsinB"></span>
-sinA*sinB =     (       sqrt(5)) / 4 = <span id="sinAsinB"></span>
-</pre>
+5A &= {2\pi} \\
+5B &= {\pi} \\
+4\cos(A) &=  -1 + \sqrt{5} \\
+4\cos(B) &=   1 + \sqrt{5} \\
 
-<h2>Pentagon 1</h2>
+8\cos^2(A) &= { 3 - \sqrt{5}} \\
+8\cos^2(B) &= { 3 + \sqrt{5}} \\
 
-<table>
-<tr>
-<td>
+4\cos(A)\cos(B) &= 1 \\
+
+8\sin^2(A) &= 5 + \sqrt{5} \\
+8\sin^2(B) &= 5 - \sqrt{5} \\
+4\sin(A)\sin(B) &= \sqrt{5}
+
+\end{align*}
+</div>
+
+<h2>Pentagons I</h2>
+<p>
 <object data="inkscape/pentagon1.svg" type="image/svg+xml"></object>
-</td>
-<td>
-<pre>
-dx<sup>2</sup> = ((a + c)*cosA + b)<sup>2</sup>
-    = (a + c)<sup>2</sup> * cos<sup>2</sup>A
-      + 2(a + c)b * cosA
-      + b<sup>2</sup>
+</p>
+<p>
+A pentagon type I has three integral rods (or sections of rods) \( a, b, c \) at fixed angles. We want to find a fourth integral rod \( d \) in order to make regular pentagons like the diagram above. We start by looking \( d \) relations with other rods:
+\begin{align*}
+d_x^2 &= ( (a + c)\cos(A) + b)^2 \\
+      &= (a + c)^2\cos^2(A) + 2(a + c)b\cos(A) + b^2 \\
+d_y^2 &= ( (a - c)\sin(A))^2 \\
+      &= (a - c)^2\sin^2(A) \\
 
-dy<sup>2</sup> = ((a - c)*sinA)<sup>2</sup>
-    = (a - c)<sup>2</sup> * sin<sup>2</sup>A
+d^2 &= d_x^2 + d_y^2 \\
+    &= (a + c)^2\cos^2(A)
+    + (a - c)^2\sin^2(A)
+    + 2(a + c)b\cos(A)
+    + b^2 \\
+    &= (a + c)^2(3 - \sqrt{5})/8 \\
+    &\qquad + (a - c)(5 + \sqrt{5})/8 \\
+    &\qquad + 2(a + c)b(-1 + \sqrt{5})/4 \\
+    &\qquad + b^2 \\
+    &= m\sqrt{5} + n \\
 
-d<sup>2</sup> = dx<sup>2</sup> + dy<sup>2</sup>
-   =   (a + c)(a + c) * cos<sup>2</sup>A
-     + (a - c)(a - c) * sin<sup>2</sup>A
-     + 2(a + c)b * cosA
-     + b<sup>2</sup>
-   =   (a + c)(a + c) * (  3 -  sqrt(5)) / 8
-     + (a - c)(a - c) * (  5 +  sqrt(5)) / 8
-     + 2(a + c)b      * ( -1 +  sqrt(5)) / 4
-     + b*b
+\end{align*}
 
-d*d = R*sqrt(5) + Z
-</pre>	
-</td>
-</tr>
-</table>
+Last equation has two parts, \( m \) with factors of \( \sqrt{5} \) and \( n \) with integers, so:
 
-<div>Simplification</div>
+\begin{align*}
+8m  &= -(a + c)^2 + (a - c)^2 + 4(a + c)b \\
+    &= 4(a + c)b - 4ac \\
+8n &= 3(a + c)^2 + 5(a - c)^2 - 4(a + c)b + 8b^2 \\
+\end{align*}
 
-<pre>
-8R = -(a + c)(a + c) + (a - c)(a - c) + 4(a + c)b
-   = 4(a + c)b - 4ac
+Simplifying:
 
-8Z = 3(a + c)(a + c) + 5(a - c)(a - c) - 4(a + c)b + 8*b*b
+\begin{align*}
+m   &= \frac{ ab - ac + bc}{2} \\
+n  &= \frac{ a^2 + b^2 + c^2 - ab - ac - cb }{2} \\
+   &= \frac{ a^2 + b^2 + c^2 - ac }{2} + m
+\end{align*}
 
- R = <b>[ ab - ac + cb ] / 2</b>
- Z = <b>a*a + b*b + c*c - [ ab + ac + cb ] / 2</b>
-</pre>
+\( d\) is an integer when:
+<ol>
+<li> \( m = 0 \), to vanish \( \sqrt{5} \) from equations.</li>
+<li> \(n_{m=0} \) is a square.</li>
+</ol>
+\begin{align*}
+(a + c)b &= ac \\
+n_{m=0} &= a^2 + b^2 + c^2 - ac \\
+d &= \sqrt{n_{m=0}}
+\end{align*}
 
+This diofantine equation should be solved:
+\begin{align*}
+d^2 = a^2 + b^2 + c^2 - ac
+\end{align*}
+</div>
+
+<p>
+Next javascript program finds a single solution for a <= 5000!  
+<b>a=12, b=3, c=4, d=11</b>.
+</p>
 <table>
 <tr>
-<td>In order sqrt(5) vanishes, R should be zero or</td>  
-<td><tt>ab + cb = ac</tt></td>
-</tr> 
-<tr>
-<td>In order d is integer, d*d should be square or</td>
-<td><tt>d*d = a*a + b*b + c*c - ac</tt></td>  
-</tr>
-<tr>
 <td>
-<button id="sol1">Solutions 1</button><span id="sol1Mess"></span>
+<pre id="p1-code"></pre>
 </td>
 <td>
-<pre id="sol1List"></pre>
+<div><button id="p1-button">find(1000)</button></div>
+<div id="p1-message"></div>
+<div id="p1-list"></div>
+<div>
 </td>
 </tr>
-</table>
-
 <script type="text/javascript">
-	document.getElementById("sol1").onclick = ()=> {
-		$("sol1Mess", "Test 1000")
-		$("sol1List", "")
-		const solList = []
-		const message = (text)=> { $("sol1Mess", text) }
-		const list = (text)=> { solList.push(text); $("sol1List", solList.join("\n")) }
-		P1.solutions(1000, message, list)		
-	}
-  /*
-	const R1 = (a,b,c)=> ( a*b - a*c + c*b ) / 2
-	const Z1 = (a,b,c)=> a*a + b*b + c*c - ( a*b + a*c + c*b) / 2
-	{
-		const a = 12, b = 3, c = 4
-		const r1 = R1(a,b,c)
-		const z1 = Z1(a,b,c)
-		$("test", `a=${a} b=${b} c=${c} R=${r1} Z=${z1}`)
-	}*/
+  $("p1-code", MeccanoPentagonI.toString().replace(/\t/g, "&nbsp;&nbsp;"))
+  document.getElementById("p1-button").onclick = ()=> {
+    const n = 1000
+    const list = []
+    const p1 = new MeccanoPentagonI(list)
+    $("p1-message", `Testing all a <= ${n}...`)
+    $("p1-list", "")
+    const now = +new Date()
+    setTimeout(function() {
+      const result = p1.find(n)   
+      $("p1-message", `Solutions:${list.length} a<= ${n} ms:${+new Date() - now}`)
+      $("p1-list", list.map(l => `${JSON.stringify(l)}<br/>`))
+    }, 50)
+  }
 </script>
-</td>
-</tr>
 </table>
 
 
-<h2>Pentagon 2</h2>
 
-<table>
-<tr>
-<td>
-<object data="inkscape/pentagon2.svg" type="image/svg+xml"></object>
-</td>
-<td style="vertical-align: top;"><pre>
-e<sub>x</sub> = b(cosA) + a + c(cosA) - d(cosB)
-   = a + (b + c)(cosA) - d(cosB)
-e<sub>y</sub> = c(sinA) - b(sinA) - d(sinB)
-   = (c - b)(sinA) - d(sinB)
-
-e<sub>x</sub><sup>2</sup> = [ a + (b + c)(cosA) - d(cosB) ]<sup>2</sup>
-    = a<sup>2</sup> 
-      + (b + c)<sup>2</sup>    * cos<sup>2</sup>A
-      + d<sup>2</sup>          * cos<sup>2</sup>B
-      + 2(a)(b + c) * cosA
-      - 2(a)(d)     * cosB
-      - 2(b + c)(d) * cosAcosB
-
-e<sub>y</sub><sup>2</sup> = [ (c - b)(sinA) - d(sinB) ]<sup>2</sup>
-    = (c - b)<sup>2</sup>    * sin<sup>2</sup>A
-      + d<sup>2</sup>        * sin<sup>2</sup>B
-      - 2(c - b)d * sinAsinB
-
-e<sup>2</sup> = e<sub>x</sub><sup>2</sup> + e<sub>y</sub><sup>2</sup>
-    = a<sup>2</sup> 
-      + (b + c)<sup>2</sup>    * ( 3 - sqrt(5)) / 8
-      + d<sup>2</sup>          * ( 3 + sqrt(5)) / 8
-      + 2(a)(b + c) * (-1 + sqrt(5)) / 4
-      - 2(a)(d)     * ( 1 + sqrt(5)) / 4
-      - 2(b + c)(d) *  1 / 4
-
-      + (c - b)<sup>2</sup>    * ( 5 + sqrt(5)) / 8
-      + d<sup>2</sup>          * ( 5 - sqrt(5)) / 8
-      - 2(c - b)d   * ( sqrt(5)) / 4
-
-</pre></td>
-</tr>
-</table>
-
-Simplification:
-<pre>
-e*e = R*sqrt(5) + Z
-
-R = [-(b+c)<sup>2</sup> + d<sup>2</sup> + 4(a)(b+c) - 4(a)(d) + (c-b)<sup>2</sup> - d<sup>2</sup> - 4(c-b)d ] / 8
-    
-  = <b> ( (a - b)*(c - d) + a*b - c*d ) / 2 </b> = <span id="abcdRad"></span>
-
-Z = [ 8*a<sup>2</sup> + 3(b+c)<sup>2</sup> + 3d<sup>2</sup> - 4(a)(b+c) - 4(a)(d) - 4(b+c)(d) + 5(c-b)<sup>2</sup> + 5d<sup>2</sup> ] / 8
-    
-  = <b>a*a + b*b + c*c + d*d - ( (a + b)*(c + d) + a*b + c*d ) / 2</b> = <span id="abcdInt"></span>
-</pre>
-
-
-
-<table>
-<tr>
-<td>In order sqrt(5) vanishes, R should be zero or</td>  
-<td><tt>a(b+c) + bd = c(b + d) + bc</tt></td>
-</tr> 
-<tr>
-<td>In order e is integer, e*e should be square or</td>
-<td><tt>e*e = a*a + b*b + c*c + d*d - ad - bc - cd</tt></td>  
-</tr>
-<tr>
-<td>
-<button id="sol2">Solutions 2</button><span id="sol2Mess"></span>
-</td>
-<td>
-<pre id="sol2List"></pre>
-</td>
-</tr>
-</table>
 
 <script>
+const P2 = new MeccanoPentagonII()
+</script>
+
+
+<h2>Pentagons II</h2>
+<p>
+<object data="inkscape/pentagon2.svg" type="image/svg+xml"></object>
+</p>
+<p>
+A pentagon type II has four integral rods (or sections of rods) \( a, b, c, d \) at fixed angles. We want to find a fifth integral rod \( e \) in order to make regular pentagons like the diagram above. We start by looking \( e \) relations with the rest of rods:
+\begin{align*}
+e_x &= b\cos(A) + a + c\cos(A) - d\cos(B) \\
+      &= a + (b + c)\cos(A) - d\cos(B) \\
+
+e_y &= c\sin(A) - b\sin(A) - d\sin(B) \\
+      &= (c - b)\sin(A) - d\sin(B) 
+\\
+e^2 &= e_x^2 + e_y^2 \\
+    &= a^2 + (b + c)^2\cos^2(A) + d^2\cos^2(B) \\
+    &\qquad + 2a(b + c)\cos(A) - 2ad\cos(B) \\
+    &\qquad - 2(b + c)d\cos(A)cos(B) \\
+    &\qquad + (c - b)^2\sin^2(A) + d^2\sin^2(B) \\
+    &\qquad - 2(c - b)d\sin(A)\sin(B) \\
+    &= a^2 - 2(b + c)d / 4 \\
+    &\qquad + (b + c)^2 ( 3 - \sqrt{5}) / 8 \\
+    &\qquad + d^2       ( 3 + \sqrt{5}) / 8 \\
+    &\qquad + 2a(b + c) (-1 + \sqrt{5}) / 4 \\
+    &\qquad - 2ad( 1 + \sqrt{5}) / 4 \\
+    &\qquad + (c - b)^2 ( 5 + \sqrt{5}) / 8 \\
+    &\qquad + d^2       ( 5 - \sqrt{5}) / 8 \\
+    &\qquad - 2(c - b)d ( \sqrt{5}) / 4 \\
+    &= m\sqrt{5} + n \\
+\end{align*}
+
+Last equation has two parts, \( m \) with factors of \( \sqrt{5} \) and \( n \) with integers, so:
+
+\begin{align*}
+8m &= -(b+c)^2 + d^2 + 4a(b+c) - 4ad + (c-b)^2 - d^2 - 4(c-b)d \\
+8n &= 8a^2 + 3(b+c)^2 + 3d^2 - 4a(b+c) - 4ad - 4(b+c)d + 5(c-b)^2 + 5d^2 \\
+\end{align*}
+
+Simplifying:
+
+\begin{align*}
+m &= \frac{(a - b)(c - d) + ab - cd}{2} \\
+n &= \frac{ a^2 + b^2 + c^2 + d^2 - ((a + b)(c + d) + ab + cd )}{2} \\
+  &= \frac{ a^2 + b^2 + c^2 + d^2 - ad - bc - cd }{2} + m
+
+\end{align*}
+
+\( d\) is an integer when:
+<ol>
+<li> \( m = 0 \), to vanish \( \sqrt{5} \) from equations.</li>
+<li> \(n_{m=0} \) is a square.</li>
+</ol>
+\begin{align*}
+(a - b)(c - b ) + ab &= cd \\
+n_{m=0} &= a^2 + b^2 + c^2 + d^2 - ad - bc - cd \\
+e &= \sqrt{n_{m=0}}
+\end{align*}
+
+This diofantine equation should be solved:
+\begin{align*}
+e^2 = a^2 + b^2 + c^2 + d^2 - ad - bc - cd
+\end{align*}
+</div>
+
+
+
+<p>
+Next javascript program finds SEVERAL solutions
+</p>
+<table>
+<tr>
+<td>
+<pre id="p2-code"></pre>
+</td>
+<td>
+<div><button id="p2-button">find(200)</button></div>
+<div id="p2-message"></div>
+<div id="p2-list"></div>
+<div>
+</td>
+</tr>
+<script type="text/javascript">
+  $("p2-code", MeccanoPentagonII.toString().replace(/\t/g, "&nbsp;&nbsp;"))
+  document.getElementById("p2-button").onclick = ()=> {
+    const n = 200
+    const list = []
+    const p2 = new MeccanoPentagonII(list)
+    $("p2-message", `Testing all a <= ${n}...`)
+    $("p2-list", "")
+    const now = +new Date()
+    setTimeout(function() {
+      const result = p2.find(n)   
+      $("p2-message", `Solutions:${list.length} a<= ${n} ms:${+new Date() - now}`)
+      $("p2-list", list.map(l => `${JSON.stringify(l)}<br/>`))
+    }, 50)
+  }
+</script>
+</table>
+
+<!--script>
 {
 	document.getElementById("sol2").onclick = ()=> {
 		$("sol2Mess", "...")
@@ -215,6 +267,7 @@ Z = [ 8*a<sup>2</sup> + 3(b+c)<sup>2</sup> + 3d<sup>2</sup> - 4(a)(b+c) - 4(a)(d
 		P2.solutions(300, message, list)		
 	}
 
+/*
 	const A = 2*Math.PI/5
 	const B = 1*Math.PI/5
 
@@ -247,9 +300,9 @@ Z = [ 8*a<sup>2</sup> + 3(b+c)<sup>2</sup> + 3d<sup>2</sup> - 4(a)(b+c) - 4(a)(d
 
 
 	$("abcdRad", P2.R(a,b,c,d))
-	$("abcdInt", P2.Z(a,b,c,d))
+	$("abcdInt", P2.Z(a,b,c,d))*/
 }
-</script>
+</script-->
 <div>Pentagons side 31:</div>
 <img src="inkscape/pentagons-2-31.svg" width="500"></img>
 <div>Pentagons side 38:</div>

@@ -114,12 +114,11 @@ const Polygon = function(p, name, S, rods, skip, extremes)
 const rtr = (r1,t,r2)=> `rotate(${r1}) translate(0 ${t || 0}) rotate(${r2 || 0})`
 
 const polygons = {}
-
 const braced = new Braced(rtr, svgParams)
-braced.add(polygons)
-
 const multi = new MultiBraced(rtr, svgParams)
+
 multi.add(polygons)
+braced.add(polygons)
 
 const create = ()=> {
 	const polygon = document.getElementById("select").value
