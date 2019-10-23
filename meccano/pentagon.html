@@ -9,7 +9,7 @@
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
 
-
+<script src="svg.js"></script>
 <script type="text/javascript" src="meccano.js"></script>
 <script type="text/javascript" src="node/pentagon.js"></script>
 <style>
@@ -22,6 +22,7 @@ tt { background-color: #abc; padding:3px;}
 .inline { display: inline-block; text-align: top; }
 #p1-code, #p2-code { font-size: 10px; }
 table.counts { text-align: right; }
+svg { border:1px solid gray; }
 </style>
 
 
@@ -212,6 +213,7 @@ Next javascript program finds SEVERAL solutions
 <table>
 <tr>
 <td>
+<div id="p2-svg"></div>
 <pre id="p2-code"></pre>
 </td>
 <td>
@@ -223,6 +225,22 @@ Next javascript program finds SEVERAL solutions
 </tr>
 <script type="text/javascript">
 {
+  const $elem  = (id)=> document.getElementById(id)
+  const elem = (p, b, attrs, text, onclick)=> {
+    const c = document.createElement(b) 
+    p.appendChild(c)
+    if (attrs) { 
+      for (attr in attrs) {
+        if (attrs[attr])
+          c.setAttribute(attr, attrs[attr]) 
+      }
+    }
+    if (text) c.appendChild(document.createTextNode(text))
+    if (onclick) c.onclick = onclick
+    return c
+  }
+  const Svg = new SVG()
+  const p22 = new MeccanoPentagonIISvg(Svg, $elem("p2-svg"))
   $("p2-code", MeccanoPentagonII.toString().replace(/\t/g, "&nbsp;&nbsp;"))
   const n = 200
   document.getElementById("p2-button").innerHTML = `find(${n})`
@@ -235,8 +253,25 @@ Next javascript program finds SEVERAL solutions
     setTimeout(function() {
       const result = p2.find(n)   
       $("p2-message", `Solutions:${list.length} a<= ${n} ms:${+new Date() - now}`)
-      const cols = ["&nbsp","a","b","c","d","e"]
-      const rows = []
+      const cols = ["","a","b","c","d","e"]
+      $elem("p2-list").innerHTML = ""
+      const table = elem($elem("p2-list"), "table", { "class":"counts" })
+      const tr = elem(table, "tr")
+      cols.forEach(c => elem(tr, "th", {}, c))
+      for (let i=0; i < list.length; i++) {
+        const l = list[i]
+        const tr = elem(table, "tr")
+        const td = elem(tr, "td")
+        const btn = elem(td, "button", {}, i+1, ()=> {
+          p22.update(l.a, l.b, l.c, l.d, l.e)
+        })
+        elem(tr, "td", {}, l.a)
+        elem(tr, "td", {}, l.b)
+        elem(tr, "td", {}, l.c)
+        elem(tr, "td", {}, l.d)
+        elem(tr, "td", {}, l.e)
+      }
+      /*const rows = []
       rows.push("<table class='counts'>")
       rows.push("<tr>")
       cols.forEach(c => rows.push(`<th>${c}</th>`))
@@ -245,8 +280,8 @@ Next javascript program finds SEVERAL solutions
         const l = list[i]
         const C = i => `<td>${l[i]}</td>`
         rows.push(`<tr><td>${i+1}</td>${C("a")}${C("b")}${C("c")}${C("d")}${C("e")}</tr>`)
-      }
-      $("p2-list", rows.join(""))
+      }*/
+      
     }, 50)
   }
 }
@@ -254,7 +289,20 @@ Next javascript program finds SEVERAL solutions
 </table>
 
 
-<div>Pentagons side 31:</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--div>Pentagons side 31:</div>
 <img src="inkscape/pentagons-2-31.svg" width="500"></img>
 <div>Pentagons side 38:</div>
 <img src="inkscape/pentagons-2-38.svg" width="500"></img>
@@ -398,7 +446,7 @@ f*f =
 </pre>
 </td>
 </tr>
-</table>
+</table-->
 
 </body>
 </html>

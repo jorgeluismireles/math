@@ -40,5 +40,12 @@ const SVG = function()
 	    }
 	    return e
 	}
+
+	this.circle = (obj)=> {
+	    var e = create('circle')
+	    for (prop in obj)
+	        e.setAttribute(prop, obj[prop])  
+	    return e
+	}
 }
 
