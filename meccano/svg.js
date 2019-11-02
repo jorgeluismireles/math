@@ -47,5 +47,22 @@ const SVG = function()
 	        e.setAttribute(prop, obj[prop])  
 	    return e
 	}
+
+	this.polygon = (points)=> {
+		const e = create('polygon')
+		e.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(" "))
+		return e
+	}
+
+	const self = this
+
+	this.point = function(g, x, y)
+	{
+		this.circle = function(r) {
+			const circle = self.circle({ cx:x, cy:y, r:r })	
+			g.appendChild(circle)
+			return circle
+		}
+	}
 }
 

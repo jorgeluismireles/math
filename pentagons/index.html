@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pentagon</title>
+<script type="text/javascript" src="../meccano/svg.js"></script>
+<style>
+.n { border-top:2px solid #789; }
+.w { border-left:2px solid #789; }
+.e { border-right:2px solid #789; }
+.s { border-bottom: 2px solid #789; }
+td > div { text-align: center; }
+.col { display: inline-block; vertical-align: top; }
+table.numbers > tbody > tr > td {
+	text-align: right;
+	margin: 0 10px;
+	padding: 0 10px;
+}
+table.numbers > tbody > tr > th {
+	text-align: center;
+	margin: 0 10px;
+	padding: 0 10px;
+}
+</style>
+</head>
+<body>
+<h1>Pentagon</h1>
+<h2>Types</h2>
+<div class="col">
+
+<table>
+<tr>
+<td class="n e w"><div>1</div> <div id="t1.1"></div></td>
+<td class="n w">  <div>3a</div><div id="t2.1"></div></td>
+<td class="n">  <div>3b</div><div id="t3.1"></div></td>
+<td class="n e"><div>3c</div><div id="t4.1"></div></td>
+</tr>
+<tr>
+<td class="w s e"><div>2</div> <div id="t1.2"></div></td>
+<td class="w s e"><div>4</div> <div id="t2.2"></div></td>
+<td class="w s e"><div>5</div> <div id="t3.2"></div></td>
+<td class="w e">  <div>6a</div><div id="t4.2"></div></td>
+</tr>
+<tr>
+<td class="w n e"><div>11</div><div id="t8.2"></div></td>
+<td class="w n e"><div>9</div> <div id="t7.2"></div></td>
+<td class="w n e"><div>8</div> <div id="t6.2"></div></td>
+<td class="w e">  <div>6b</div><div id="t5.2"></div></td>
+</tr>
+<tr>
+<td class="w s e"><div>10</div><div id="t8.1"></div></td>
+<td class="w s">  <div>7c</div><div id="t7.1"></div></td>
+<td class="s">    <div>7b</div><div id="t6.1"></div></td>
+<td class="s e">  <div>7a</div><div id="t5.1"></div></td>
+</tr>
+</table>
+
+</div>
+<div class="col">
+<table class="numbers">
+<tr>
+<th>Crossings</th><th>Holes</th><th>angles > pi</th><th>Pentagons</th>
+</tr>
+<tr><th colspan="4" style="text-align:center;">Convex</th></tr>
+<tr><td>0</td><td>0</td><td>0,0,0,0,0</td><td>1</td></tr>
+<tr><th colspan="4" style="text-align:center;">Concave</th></tr>
+<tr><td>0</td><td>0</td><td>1,0,0,0,0</td><td>3a, 3b, 3c</td></tr>
+<tr><td>0</td><td>0</td><td>1,1,0,0,0</td><td>9</td></tr>
+<tr><td>0</td><td>0</td><td>1,0,1,0,0</td><td>10</td></tr>
+<tr><th colspan="4" style="text-align:center;">No simple</th></tr>
+<tr><td>1</td><td>0</td><td>0,0,1,0,0</td><td>7a, 7b, 7c</td></tr>
+<tr><td>1</td><td>0</td><td>1,0,1,0,0</td><td>5</td></tr>
+<tr><td>1</td><td>0</td><td>?</td><td>8</td></tr>
+<tr><td>1</td><td>1</td><td>?</td><td>11</td></tr>
+<tr><td>2</td><td>0</td><td>?</td><td>6a, 6b</td></tr>
+<tr><td>3</td><td>1</td><td>?</td><td>4</td></tr>
+<tr><td>5</td><td>1</td><td>?</td><td>2</td></tr>
+
+</table>
+</div>
+
+
+</body>
+
+<script>
+$ = id => document.getElementById(id)
+
+const vertices = {
+	A:  { x:+5, y:+3 },
+	B:  { x:+3, y:-4 },
+	C:  { x:-3, y:-3 },
+	D:  { x:-5, y:+2 },
+	E0: { x: 0, y:+6 },
+	E1: { x: 0, y: 1 },
+	E2: { x:-0.5, y:-2.5 },
+	E3: { x:+3,   y: 0 },
+	E4: { x: 0,   y:-0.5 }
+}
+
+function type(Svg, parent, row, first)
+{
+	const W = 110, H = 110, S = 8, R=0
+	const s = Svg.svg(W, H)
+	parent.appendChild(s)
+	const g0 = Svg.g({
+		transform:`translate(${W/2} ${H/2}) scale(${1} ${-1}) rotate(${R})`,
+		"stroke-width":`${1}px`,
+		"stroke-linecap": "round",
+		"stroke":"#000"
+	})
+	s.appendChild(g0)
+	
+	const fill   = first ? row.c1[0] : row.c2[0]
+	const stroke = first ? row.c1[1] : row.c2[1]
+	const p1 = Svg.g({ fill:fill, stroke:stroke, "stroke-width":2, "fill-rule":"evenodd" })
+	const p2 = Svg.g({ fill:"transparent", stroke:"#234" })
+	const gc = Svg.g({ fill:stroke,stroke:"transparent" })
+
+	g0.appendChild(p1)
+	g0.appendChild(p2)
+	g0.appendChild(gc)
+
+	const polygon = (keys)=> {
+		return Svg.polygon(keys.map(k => {
+			const v = vertices[k]
+			return { x:S*v.x, y:S*v.y }
+		}))
+	}
+	const circle = (k)=> {
+		const v = vertices[k]
+		return Svg.circle({ cx:S*v.x, cy:S*v.y, r:3 })
+	}
+
+	const p = row.p
+	const direct  = [ p[0],p[1],p[2],p[3],p[4] ]
+	const inverse = [ p[0],p[2],p[4],p[1],p[3] ]
+	p1.appendChild(polygon(first ? direct  : inverse))
+	p2.appendChild(polygon(first ? inverse : direct ))
+	p.forEach(k => gc.appendChild(circle(k)) )
+}
+</script>
+
+<script>
+const Svg = new SVG()
+
+const T1 = ["#f88","#800"]
+const T2 = ["#f84","#840"]
+const T3 = ["#ff0","#880"]
+const T4 = ["#0f0","#080"]
+const T5 = ["#0ff","#088"]
+const T6 = ["#08f","#048"]
+const T7 = ["#80f","#408"]
+
+const T = {
+	"1": { p: [ "A", "B",  "C", "D",  "E0" ], c1:T1, c2:T7 },
+	"2": { p: [ "A", "B",  "C", "D",  "E1" ], c1:T2, c2:T6 },
+	"3": { p: [ "A", "B",  "C", "D",  "E2" ], c1:T2, c2:T3 },
+	"4": { p: [ "A", "B",  "C", "D",  "E3" ], c1:T2, c2:T4 },
+	"5": { p: [ "A", "C",  "B", "D",  "E0" ], c1:T3, c2:T4 },
+	"6": { p: [ "A", "E3", "C", "B",  "D"  ], c1:T3, c2:T3 },
+	"7": { p: [ "A", "E4", "B", "E3", "D"  ], c1:T3, c2:T2 },
+	"8": { p: [ "A", "E3", "B", "E4", "D"  ], c1:T2, c2:T5 },
+}
+Object.keys(T).forEach(k => {
+	type(Svg, $(`t${k}.1`), T[k], true)
+	type(Svg, $(`t${k}.2`), T[k], false)
+})
+</script>
+</html>

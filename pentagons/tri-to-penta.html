@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tri to Penta</title>
+	<script type="text/javascript" src="../js/svg.js"></script>
+	<style type="text/css">
+svg { border:1px solid #def; }		
+.draft { stroke:#abc; stroke-width:1px; fill:none; }
+.s1  { stroke:#f00; stroke-width:1px; fill:none; }
+.s2  { stroke:#f80; stroke-width:1px; fill:none; }
+.s3  { stroke:#0d0; stroke-width:1px; fill:none; }
+.text { 
+	dominant-baseline:middle;
+	text-anchor:middle;
+	font-size: 14px;
+	font-family: sans-serif;
+}
+
+.dot { fill:#000; }
+
+.fat { stroke-width:3px; }
+	</style>
+
+</head>
+<body>
+
+<h1>Triangles to Pentagons</h1>
+
+<h2>Triangle</h2>
+<div id="triangle">
+</div>
+
+<script>
+
+const TRIANGLE = function(LIMIT, A, B, C)
+{
+	const Geom = new GEOM()
+	// points
+	const O = { x:  0, y:  0, n:"O" }
+	// lines
+	const AB = Geom.lineCircleIntersection(A, B, LIMIT) // first
+	const BC = Geom.lineCircleIntersection(B, C, LIMIT) // second
+	const CA = Geom.lineCircleIntersection(C, A, LIMIT) // third
+	// points at infinity
+	const end = {
+		AB: Geom.nearestPoint(B, AB),
+		BC: Geom.nearestPoint(C, BC),
+		CA: Geom.nearestPoint(A, CA),
+		BA: Geom.nearestPoint(A, AB),
+		CB: Geom.nearestPoint(B, BC),
+		AC: Geom.nearestPoint(C, CA),
+	}
+
+	const touch = [ // touching regions
+		// r1  r2  r3  r4
+		[  AB,  0,  0,  0, ], // r2
+		[  BC,  0,  0,  0, ], // r3
+		[  CA,  0,  0,  0, ], // r4
+		[   0, CA,  0, AB, ], // r5
+		[   0, BC, AB,  0, ], // r6
+		[   0,  0, CA, BC, ], // r7
+	]
+
+	this.regions = ()=> {
+		return [
+			// 1
+			Geom.avgPoint([ A, B, C ]),
+			// 2,3,4
+			Geom.avgPoint([ A, end.CA, B, end.CB ]),
+			Geom.avgPoint([ B, end.AB, C, end.AC ]),
+			Geom.avgPoint([ C, end.BC, A, end.BA ]),
+			// 5,6,7
+			Geom.avgPoint([ A, end.CA, end.BA ]),
+			Geom.avgPoint([ B, end.CB, end.AB ]),
+			Geom.avgPoint([ C, end.AC, end.BC ])
+		]
+	}
+
+	this.all = ()=> {
+		return [ O, A, B, C ]
+	}
+
+	this.ABC = ()=> {
+		return [ A, B, C ]
+	}
+
+	this.lines = ()=> {
+		return [ AB, BC, CA ]
+	}
+}
+
+const LIMIT = 100
+const A = { x:+10, y:-60, n:"A" }
+const B = { x:+40, y:+40, n:"B" }
+const C = { x:-40, y:+20, n:"C" }
+const Triangle = new TRIANGLE(LIMIT, A, B, C)
+
+// svg
+
+const Svg = new SVG()
+const W = 250, H = 250, S = 1, R=0
+const s = Svg.svg(W, H)
+const parent = document.getElementById("triangle")
+parent.appendChild(s)
+const g0 = Svg.g({
+	transform:`translate(${W/2} ${H/2}) scale(${S} ${S})`
+})
+s.appendChild(g0)
+const gc = Svg.g({ fill:"blue" })
+g0.appendChild(gc)
+
+
+const o = {}
+Triangle.all().forEach(a => {
+	o[a.n] = Svg.point(g0, a)
+})
+
+const segs = {}
+let sc = 1
+Triangle.lines().forEach(line => {
+	segs[`s${sc++}`] = line
+})
+
+// draw circle
+o.O.circle.radius(LIMIT, "draft"),
+// draw segments
+Object.keys(segs).forEach(k => {
+	const seg = segs[k]
+	Svg.point(g0, seg[0]).line.point(seg[1], k)
+})
+// lines
+o.A.line.point(B, "s1 fat")
+o.B.line.point(C, "s2 fat")
+o.C.line.point(A, "s3 fat")
+
+// points
+o.A.circle.radius(5, "dot")
+o.B.circle.radius(5, "dot")
+o.C.circle.radius(5, "dot")
+o.A.text.arc("A", "text", 15,   0)
+o.B.text.arc("B", "text", 15, -45)
+o.C.text.arc("C", "text", 15, +80)
+
+const regions = Triangle.regions()
+
+for (let r=0; r < regions.length; r++) {
+	if (regions[r])
+		Svg.point(g0, regions[r]).text.center(r+1, "text")
+}
+
+</script>
+
+<object data="inkscape/tri-to-penta.svg" type="image/svg+xml" width="600px"></object>
+
+</body>
+</html>
