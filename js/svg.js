@@ -113,7 +113,7 @@ const SVG = function()
 	}
 }
 
-const GEOM = function()
+const Geometry = function()
 {
 	this.avgPoint = (points)=> {
 		let n = 0
@@ -191,6 +191,20 @@ const GEOM = function()
 					y: y0 + L.a * m
 				}
 			]
+		}
+	}
+
+	this.lineLineIntersection = (L1, L2)=> {
+		const x = [ L1[0].x, L1[1].x, L2[0].x, L2[1].x ]
+		const y = [ L1[0].y, L1[1].y, L2[0].y, L2[1].y ]
+		const d = (x[0]-x[1])*(y[2]-y[3]) - (y[0]-y[1])*(x[2]-x[3])
+		if (d == 0)
+			return null
+		const x1y2_y1x2 = x[0]*y[1] - y[0]*x[1]
+		const x3y4_y3x4 = x[2]*y[3] - y[2]*x[3]
+		return {
+			x: ( x1y2_y1x2*(x[2]-x[3]) - (x[0]-x[1])*x3y4_y3x4 ) / d,
+			y: ( x1y2_y1x2*(y[2]-y[3]) - (y[0]-y[1])*x3y4_y3x4 ) / d
 		}
 	}
 }
