@@ -6,13 +6,25 @@ const SVG = function()
 		return document.createElementNS(SVG, elem);
 	}
 
-	this.svg = (width, height, obj)=> {
+	const xml = (elem)=> {
+		return document.createElement(elem)
+	}
+
+	this.svg = (width, height, obj, style)=> {
 	    var svg = create('svg')
 		svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+		svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink")
 		svg.setAttribute("width", width)
 		svg.setAttribute("height", height)
 	    for (prop in obj)
 	        svg.setAttribute(prop, obj[prop])  
+	    if (style) {
+	    	const s = xml("style")
+	    	for (a in style.attrs)
+	    		s.setAttribute(a, style.attrs[a])
+	    	s.innerHTML = style.text
+	    	svg.appendChild(s)
+	    }
 	    return svg
 	}
 
@@ -205,6 +217,33 @@ const Geometry = function()
 		return {
 			x: ( x1y2_y1x2*(x[2]-x[3]) - (x[0]-x[1])*x3y4_y3x4 ) / d,
 			y: ( x1y2_y1x2*(y[2]-y[3]) - (y[0]-y[1])*x3y4_y3x4 ) / d
+		}
+	}
+
+	this.order = (p1, p2, segment, diagonal)=> {
+		if (!p1) return;
+		if (!p2) return;
+		if (!segment || segment.length != 2) return;
+		const s1 = segment[0]
+		const s2 = segment[1]
+		const points = [ p1, p2, s1, s2 ]
+		if (diagonal)
+			points.push(diagonal)
+		for (let p=0; p < points.length; p++) {
+			const P = points[p]
+			if (P.x == undefined || P.y == undefined)
+				return
+		}
+		const dx = Math.abs(p1.x - p2.x)
+		const dy = Math.abs(p1.y - p2.y)
+		if (dx >= dy) {
+			return (p1.x < p2.x) 
+				? points.sort((a,b) => a.x - b.x)
+				: points.sort((a,b) => b.x - a.x)
+		} else {
+			return (p1.y < p2.y)
+				? points.sort((a,b) => a.y - b.y)
+				: points.sort((a,b) => b.y - a.y)
 		}
 	}
 }
