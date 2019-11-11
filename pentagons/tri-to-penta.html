@@ -6,216 +6,227 @@
 <script type="text/javascript">
 
 
-const Euclidean = function(polygon, LIMIT)
+const EuclideanSvg = function(polygon, LIMIT, parent, styles)
 {
-	let Svg, g0, P = {}, L = {}
+	const P = {}
+	const L = {}
 
-	this.svg = (parent, styles)=> {
-		Svg = new SVG()
-		const W = parseInt(LIMIT*2.5)
-		const S = 1, R=0
-		const s = Svg.svg(W, W, {}, styles)
-		parent.appendChild(s)
-		g0 = Svg.g({
-			transform:`translate(${W/2} ${W/2}) scale(${S} ${S})`
-		})
-		s.appendChild(g0)
-		const gc = Svg.g({ })
-		g0.appendChild(gc)
-		
-		const PP = polygon.points()
-		Object.keys(PP).forEach(k => {
-			P[k] = Svg.point(g0, PP[k]) 
-		})
-		const PL = polygon.lines()
-		Object.keys(PL).forEach(k => { 
-			L[k] = PL[k] 
-		})
-	}
+	const Svg = new SVG()
+	const W = parseInt(LIMIT*2.5)
+	const S = 1, R=0
+	const s = Svg.svg(W, W, {}, styles)
+	parent.appendChild(s)
+	const g0 = Svg.g({
+		transform:`translate(${W/2} ${W/2}) scale(${S} ${S})`
+	})
+	s.appendChild(g0)
+	const gc = Svg.g({ })
+	g0.appendChild(gc)
+	
+	const PP = polygon.points()
+	Object.keys(PP).forEach(k => { P[k] = Svg.point(g0, PP[k]) })
+	const PL = polygon.lines()
+	Object.keys(PL).forEach(k => { L[k] = PL[k] })
 
-	this.drawInfinity = (clazz)=> {
-		P.O.circle.radius(LIMIT, clazz)
-	}
-	this.drawLines = ()=> {
-		Object.keys(L).forEach(k => {
-			const seg = L[k]
-			Svg.point(g0, seg[0]).line.point(seg[1], k)
-		})
-	}
-
-	this.drawSegments = (segments)=> {
-		segments.forEach(s => {
-			const p1 = P[s.p1]
-			if (p1)
-				p1.line.point(s.p2, s.c)
-		})
-	}
-
-	this.drawPoints = (points, g)=> {
-		const r1 = g && g.r1
-		const c1 = g && g.c1
-		const c2 = g && g.c2
-		const r2 = g && g.r2
-		points.forEach(p => {
-			const p1 = P[p.n]
-			if (p1) {
-				p1.circle.radius(p.r1 || r1, p.c1 || c1)
-				if (p.a != undefined)
-					p1.text.arc(p.n, p.c2 || c2, p.r2 || r2, p.a)
-			}
-		})
-	}
-
-	this.drawRegionsNames = (clazz)=> {
-		const regions = polygon.regions()
-		Object.keys(regions).forEach(k => {
-			Svg.point(g0, regions[k]).text.center(k, clazz)
-		})
+	this.draw = {
+		infinity: (clazz)=> {
+			P.O.circle.radius(LIMIT, clazz)
+		},
+		lines: ()=> {
+			Object.keys(L).forEach(k => {
+				const seg = L[k]
+				Svg.point(g0, seg[0]).line.point(seg[1], k)
+			})
+		},
+		segments: (s, clazz)=> {
+			s.forEach(s => {
+				const p1 = P[s.p1]
+				const p2 = PP[s.p2]
+				if (p1 && p2)
+					p1.line.point(p2, `${s.p1}${s.p2} ${clazz}`)
+			})
+		},
+		points: (p, g)=> {
+			const r1 = g && g.r1
+			const c1 = g && g.c1
+			const c2 = g && g.c2
+			const r2 = g && g.r2
+			p.forEach(p => {
+				const p1 = P[p.n]
+				if (p1) {
+					p1.circle.radius(p.r1 || r1, p.c1 || c1)
+					p1.text.arc(p.n, p.c2 || c2, p.r2 || r2, p.a || "")
+				}
+			})
+		},
+		infinityPoints: (clazz)=> {
+			Object.keys(L).forEach(line => {
+				L[line].forEach(p => {
+					const point = P[p.k]
+					point.circle.radius(clazz.r1, clazz.c1)
+					let a = 180*Math.atan2(p.y, p.x) / Math.PI
+					point.text.arc(p.k, clazz.c2, clazz.r2, a)
+				})
+			})
+		},
+		texts: (p, clazz)=> {
+			p.forEach(p => {
+				Svg.point(g0, p).text.center(p.text, clazz)
+			})
+		}
 	}
 }
 
+const Polygon = function(P, points, LIMIT) 
+{
+	const g = new Geometry()
+	Object.keys(P).forEach(k => {
+		P[k].k = k
+	})
+	P.O = { x:0, y:0 }
+
+	const L = {}
+	const lines = []
+	for (let i=0; i < points.length - 1; i++) { 
+		const I = points[i]
+		for (let j=i+1; j < points.length; j++) {
+			const J = points[j]
+			const k = `${I}${J}`
+			const l = g.lineCircleIntersection(P[I], P[J], LIMIT)
+			L[k] = l
+			lines.push({ k:k, l:l })
+		}
+	}
+
+	// diagonals
+	const D = {}
+	for (let i=0; i < lines.length - 1; i++) {
+		const I = lines[i].k
+		for (let j=i+1; j < lines.length; j++) {
+			const J = lines[j].k
+			if (I[0] == J[0]) continue;
+			if (I[0] == J[1]) continue;
+			if (I[1] == J[0]) continue;
+			if (I[1] == J[1]) continue;
+			const k = `${I}${J}`
+			const d = g.lineLineIntersection(L[I], L[J])
+			d.k = k
+			D[k] = d
+			P[k] = d
+			lines[i].d = k
+			lines[j].d = k
+		}
+	}
+
+	const C = []
+	const border = []
+	{
+		const U = []
+		const L = []
+		lines.forEach(line => {
+			const k1 = line.k
+			const s = k1[0]
+			const t = k1[1]
+			const k2 = `${t}${s}`
+			//infinity.push(k1)
+			//infinity.push(k2)
+			const c = g.order(P[s], P[t], line.l, P[line.d])
+			//C[k1] = c
+			const first = c[0]
+			const last  = c[c.length - 1]
+			first.k = k1
+			last.k  = k2
+
+			P[k1] = first
+			P[k2] = last
+
+			if (first.y >= 0) U.push(first); else L.push(first)
+			if (last.y  >= 0) U.push(last);  else L.push(last)
 
 
+			C.push(c.map(c => c.k ))
 
+		})
+		console.log("C", JSON.stringify(C))
+		
+		U.sort((a,b) => b.x - a.x )
+		L.sort((a,b) => a.x - b.x )
+		border.push(...U)
+		border.push(...L)
+		const AS = border.length
+		let offset = 0
+		for (let i=0; i < AS; i++) {
+			if (border[i].k == "AB")
+				offset = i
+		}
+		for (let i=0; i < AS; i++)
+			border[i].i = 1 + (AS + i - offset) % AS
+	}
+	
+
+	const M = []
+	const I = border.length
+	const next = (extreme)=> {
+		for (let c=0; c < C.length; c++) {
+			const cc = C[c]
+			const max = cc.length
+			if (extreme == cc[0])
+				return cc[1]
+			if (extreme == cc[max-1])
+				return cc[max-2]
+		}
+		return "?"
+	}
+	for (let i=0; i < I; i++) {
+		const b1 = border[   i  % I]
+		const b2 = border[(i+1) % I]
+		const k1 = b1.k
+		const n = next(k1)
+		if (n) {
+			const b3 = P[n]
+			M.push({
+				x: (b1.x + b3.x) / 2,
+				y: (b1.y + b3.y) / 2,
+				text: 2*b1.i - 1,
+				k1: b1.k,
+				k2: b3.k
+			})
+		}
+		M.push({ 
+			x: (b1.x + b2.x) / 2,
+			y: (b1.y + b2.y) / 2,
+			text: 2*b1.i,
+			k1: b1.k,
+			k2: b2.k
+		})
+	}
+
+
+	this.points = ()=> { return P }
+
+	this.lines  = ()=> { return L }
+
+	this.infinityOrderMedians = ()=> {
+		return M
+	}
+}
 
 const Digon = function(LIMIT, A, B)
 {
-	const g = new Geometry()
-
-	// line
-	const AB = g.lineCircleIntersection(A, B, LIMIT) // first (unique)
-
-	const P = {
-		O: { x: 0, y: 0 },
-		A: A,
-		B: B
-	}
-	const L = [ AB ]
-
-	const end = {
-		AB: g.nearestPoint(B, AB),
-		BA: g.nearestPoint(A, AB)
-	}
-	const R = ()=> [
-		g.avgPoint([ { x:0, y:+LIMIT/2 } ]), // 1
-		g.avgPoint([ { x:0, y:-LIMIT/2 } ]),   // 2
-	]
-
-	this.points  = ()=> P
-	this.lines   = ()=> L
-	this.regions = ()=> R
+	const P = { A: A, B: B }
+	return new Polygon(P, ["A", "B"], LIMIT)
 }
 
 const Trigon = function(LIMIT, A, B, C)
 {
-	const g = new Geometry()
-
-	const L = {
-		AB: g.lineCircleIntersection(A, B, LIMIT),
-		AC: g.lineCircleIntersection(A, C, LIMIT),
-		BC: g.lineCircleIntersection(B, C, LIMIT)
-	}
-
-	const P = {
-		O: { x: 0, y: 0 },
-		A: A,
-		B: B,
-		C: C
-	}
-
-	// points at infinity
-	const end = {
-		AB: g.nearestPoint(B, L.AB),
-		BC: g.nearestPoint(C, L.BC),
-		CA: g.nearestPoint(A, L.AC),
-		BA: g.nearestPoint(A, L.AB),
-		CB: g.nearestPoint(B, L.BC),
-		AC: g.nearestPoint(C, L.AC),
-	}
-
-	const R = {
-		"1": g.avgPoint([ A, B, C ]),
-		"2": g.avgPoint([ A, end.CA, B, end.CB ]),
-		"3": g.avgPoint([ B, end.AB, C, end.AC ]),
-		"4": g.avgPoint([ C, end.BC, A, end.BA ]),
-		"5": g.avgPoint([ A, end.CA, end.BA ]),
-		"6": g.avgPoint([ B, end.CB, end.AB ]),
-		"7": g.avgPoint([ C, end.AC, end.BC ])
-	}
-	
-	const touch = [ // touching regions
-		//   r1    r2    r3    r4
-		[  L.AB,    0,    0,    0, ], // r2
-		[  L.BC,    0,    0,    0, ], // r3
-		[  L.AC,    0,    0,    0, ], // r4
-		[     0, L.AC,    0, L.AB, ], // r5
-		[     0, L.BC, L.AB,    0, ], // r6
-		[     0,    0, L.AC, L.BC, ], // r7
-	]
-
-	this.points = ()=> P
-	this.lines  = ()=> L
-	this.regions = ()=> R
-
+	const P = { A: A, B: B, C: C }
+	return new Polygon(P, ["A","B","C"], LIMIT)
 }
 
 const Quadrigon = function(LIMIT, A, B, C, D)
 {
-	const g = new Geometry()
-	// lines
-	const L = {
-		AB: g.lineCircleIntersection(A, B, LIMIT),
-		AC: g.lineCircleIntersection(A, C, LIMIT),
-		AD: g.lineCircleIntersection(A, D, LIMIT),
-		BC: g.lineCircleIntersection(B, C, LIMIT),
-		BD: g.lineCircleIntersection(B, D, LIMIT),
-		CD: g.lineCircleIntersection(C, D, LIMIT),
-	}
-	// diagonals
-	const ABCD = g.lineLineIntersection(L.AB, L.CD)
-	const ACBD = g.lineLineIntersection(L.BD, L.AC)
-	const ADBC = g.lineLineIntersection(L.BC, L.AD)
-
-	// lines five points
-	const AB = g.order(A, B, L.AB, ABCD)
-	const AC = g.order(A, C, L.AC, ACBD)
-	const AD = g.order(A, D, L.AD, ADBC)
-	const BC = g.order(B, C, L.BC, ADBC)
-	const BD = g.order(B, D, L.BD, ACBD)
-	const CD = g.order(C, D, L.CD, ABCD)
-
-	const P = {
-		O: { x:0, y:0 },
-
-		// quadrilateral vertices
-		A: A, 
-		B: B, 
-		C: C,
-		D: D,
-
-		// diagonal points
-		ABCD: ABCD,
-		ACBD: ACBD,
-		ADBC: ADBC,
-
-		// points at infinity
-		AB: AB[0], BA: AB[4],
-		AC: AC[0], CA: AC[4],
-		AD: AD[0], DA: AD[4],
-		BC: BC[0], CB: BC[4],
-		BD: BD[0], DB: BD[4],
-		CD: CD[0], DC: CD[4]
-	}
-
-	// regions around diagonal points
-	//ABCD.
-
-	const R = { // first time connected by hand
-	}
-
-	this.points = ()=> P
-	this.lines  = ()=> L
-	this.regions = ()=> R
+	const P = { A: A, B: B, C: C, D: D	}
+	return new Polygon(P, ["A","B","C","D"], LIMIT)
 }
 </script>
 
@@ -237,112 +248,99 @@ const Quadrigon = function(LIMIT, A, B, C, D)
 
 <script>
 
-const STYLES = [
-	"g { stroke-width:2px; stroke:#000; }",
-	".draft { stroke:#def; fill:none; }",
-	".AB  { stroke:#f00; }",
-	".AC  { stroke:#f80; }",
-	".AD  { stroke:#0d0; }",
-	".BC  { stroke:#0ee; }",
-	".BD  { stroke:#08f; }",
-	".CD  { stroke:#80f; }",
-	".XX  { stroke:#ff0; }",
-	`.text {
-		stroke: none;
-		dominant-baseline: middle;
-		text-anchor: middle;
-		font-size: 14px;
-		font-family: sans-serif;
-	}`,
-	".small { font-size:12px; fill:#abc; }",
-	".dot { fill:#000; stroke:none; }",
-	".dot-1 { fill:#888; stroke: none; }",
-	".fat { stroke-width:4px; }"
-]
-
-
-const DigonSvg = function(parent)
+const PolygonSvg = function(parent, LIMIT, p)
 {
-	const LIMIT = 100
-	const A = { x:+50, y:-10, n:"A" }
-	const B = { x:-55, y: +5, n:"B" }
+	const STYLES = [
+		"g { stroke-width:1px; stroke:#000; }",
+		".draft { stroke:#def; fill:none; }",
+		".AB  { stroke:#f00; }",
+		".AC  { stroke:#f80; }",
+		".AD  { stroke:#0d0; }",
+		".BC  { stroke:#0ee; }",
+		".BD  { stroke:#08f; }",
+		".CD  { stroke:#80f; }",
+		".XX  { stroke:#ff0; }",
+		`.text {
+			stroke: none;
+			dominant-baseline: middle;
+			text-anchor: middle;
+			font-size: 14px;
+			font-family: sans-serif;
+		}`,
+		".small { font-size:12px; fill:#abc; }",
+		".dot { fill:#000; stroke:none; }",
+		".dot-1 { fill:#888; stroke: none; }",
+		".fat { stroke-width:4px; }",
+		".segment { stroke:none; fill:#456; font-size:10px; }"
+	]
 
-	const p = new Digon    (LIMIT, A, B)
-	const e = new Euclidean(p, LIMIT)
-
-	e.svg(parent, {
+	const e = new EuclideanSvg(p, LIMIT, parent, {
 		attrs: { type:"text/css" },
 		text: STYLES.join("\n")
 	})
-	e.drawInfinity("draft")
-	e.drawLines()
-	e.drawSegments([
-		{ p1:"A", p2:B, c:"AB fat" }
-	])
-	e.drawPoints([
-		{ n:"A", a: -45 },
-		{ n:"B", a: -45 },
-	], { r1:5, c1:"dot", c2:"text", r2:15 })
-	e.drawRegionsNames("text")
+
+	this.draw = (segments, points)=> {
+		e.draw.infinity("draft")
+		e.draw.lines()
+		e.draw.segments(segments, "fat")
+		e.draw.points(points, { r1:5, c1:"dot", c2:"text", r2:15 })
+	}
+
+	this.drawDiagonalPoints = (d)=> {
+		e.draw.points(d, { r1:5, c1:"dot-1", c2:"text small", r2:25 })		
+	}
+
+	this.drawInfinityPoints = ()=> {
+		e.draw.infinityPoints({ r1:2, c1:"dot-1", c2:"text small", r2:15 })
+	}
+
+	this.drawInfinityOrderTexts = ()=> {
+		const points = p.infinityOrderMedians()
+		e.draw.texts(points, "text segment")
+	}
 }
 
+const Digon1Svg = function(parent)
+{
+	const LIMIT = 100
+	const A = { x:+50, y:-10, a:+90 }
+	const B = { x:-55, y: +5, a:-90 }
 
-const TrigonSvg = function(parent)
+	const p = new Digon(LIMIT, A, B)
+	const s = new PolygonSvg(parent, LIMIT, p)
+	const segments = [ /* none from one */ ]
+	const points = [
+		{ n:"A", a: A.a },
+		{ n:"B", a: B.a },
+	]
+	s.draw(segments, points)
+	s.drawInfinityPoints()
+	s.drawInfinityOrderTexts()
+}
+
+const Trigon1Svg = function(parent)
 {
 	const LIMIT = 100
 	const A = { x:+10, y:-60, a:  0 }
 	const B = { x:+40, y:+40, a:-45 }
 	const C = { x:-40, y:+20, a:+80 }
 
-	const p = new Trigon   (LIMIT, A, B, C)
-	const e = new Euclidean(p, LIMIT)
-	e.svg(parent, {
-		attrs: { type:"text/css" },
-		text: STYLES.join("\n")
-	})
-	e.drawInfinity("draft")
-	e.drawLines()
-	e.drawSegments([
-		{ p1:"A", p2:B, c:"AB fat" },
-		{ p1:"A", p2:C, c:"AC fat" },
-		{ p1:"B", p2:C, c:"BC fat" },
-	])
-	e.drawPoints([
+	const p = new Trigon(LIMIT, A, B, C)
+	const s = new PolygonSvg(parent, LIMIT, p)
+	const segments = [ // two from three
+		{ p1:"A", p2:"B" },
+		{ p1:"A", p2:"C" },
+		//{ p1:"B", p2:"C" }
+	]
+	const points = [
 		{ n:"A", a: A.a },
 		{ n:"B", a: B.a },
 		{ n:"C", a: C.a },
-	], { r1:5, c1:"dot", c2:"text", r2:15 })
-	e.drawRegionsNames("text")
+	]
+	s.draw(segments, points)
+	s.drawInfinityPoints()
+	s.drawInfinityOrderTexts()
 }
-
-
-const QuadrigonSvg = function(parent, LIMIT, A, B, C, D)
-{
-	const p = new Quadrigon(LIMIT, A, B, C, D)
-	const e = new Euclidean(p, LIMIT)
-	e.svg(parent, {
-		attrs: { type:"text/css" },
-		text: STYLES.join("\n")
-	})
-
-	this.draw = (segments)=> {
-		e.drawInfinity("draft")
-		e.drawLines()
-		e.drawSegments(segments)
-		e.drawPoints([
-			{ n:"A", a: A.a },
-			{ n:"B", a: B.a },
-			{ n:"C", a: C.a },
-			{ n:"D", a: D.a },
-		], { r1:5, c1:"dot", c2:"text", r2:15 })
-		//e.drawRegionsNames("text")
-	}
-
-	this.drawPoints = (p, style)=> {
-		e.drawPoints(p, style)
-	}
-}
-
 
 const Quadrigon1Svg = function(parent)
 {
@@ -352,44 +350,33 @@ const Quadrigon1Svg = function(parent)
 	const B = { x:+10, y:-70, a:0 }
 	const C = { x:+60, y:+50, a:+120 }
 	const D = { x:-70, y:+35, a:+80 }
-	const DIAGONALS = [
+
+	const d = [
 		{ n:"ABCD", a: 35 },
 		{ n:"ACBD", a:180 },
 		{ n:"ADBC", a: 10 },
 	]
-	const INFINITY = [
-		{ n:"BA", a: -70, r2:12 },
-		{ n:"CA", a:  20 },
-		{ n:"DA", a: 150 },
-		{ n:"CB", a:  40 },
-		{ n:"DB", a: 130, r2:12 },
-		{ n:"DC", a: 185 },
-
-		{ n:"AB", a:  90, r2:12 },
-		{ n:"AC", a: 200 },
-		{ n:"AD", a: 0 },
-		{ n:"BC", a: -110, r2:12 },
-		{ n:"CD", a: 5 },
-		{ n:"BD", a: -30 }
+	const p = new Quadrigon(LIMIT, A, B, C, D)
+	const s = new PolygonSvg(parent, LIMIT, p)
+	const segments = [
+		{ p1:"A", p2:"B" },
+		//{ p1:"A", p2:"C" },
+		//{ p1:"A", p2:"D" },
+		{ p1:"B", p2:"C" },
+		//{ p1:"B", p2:"D" },
+		{ p1:"C", p2:"D" }
 	]
-
-	const s = new QuadrigonSvg(parent, LIMIT, A, B, C, D)
-	s.draw([
-		{ p1:"A", p2:B, c:"AB fat" },
-		//{ p1:"A", p2:C, c:"AC fat" },
-		//{ p1:"A", p2:D, c:"AD fat" },
-		{ p1:"B", p2:C, c:"BC fat" },
-		//{ p1:"B", p2:D, c:"BD fat" },
-		{ p1:"C", p2:D, c:"CD fat" },
-	])
-	s.drawPoints(DIAGONALS, { 
-		r1:5, c1:"dot-1", c2:"text small", r2:25 
-	})
-	s.drawPoints(INFINITY, { 
-		r1:2, c1:"dot-1", c2:"text small", r2:15 
-	})
+	const points = [
+		{ n:"A", a: A.a },
+		{ n:"B", a: B.a },
+		{ n:"C", a: C.a },
+		{ n:"D", a: D.a },
+	]
+	s.draw(segments, points)
+	s.drawDiagonalPoints(d)
+	s.drawInfinityPoints()
+	s.drawInfinityOrderTexts()
 }
-
 
 const Quadrigon2Svg = function(parent)
 {
@@ -400,55 +387,44 @@ const Quadrigon2Svg = function(parent)
 	const C = { x: -3, y:-105, a:  0 }
 	const D = { x:-59, y: -14, a:+80 }
 
-	const DIAGONALS = [
+	const d = [
 		{ n:"ABCD", a: 30 },
 		{ n:"ACBD", a:-20 },
 		{ n:"ADBC", a:150 },
 	]
-	const INFINITY = [
-		{ n:"BA", a: -15 },
-		{ n:"CA", a: -90, r2:13 },
-		{ n:"DA", a: 185 },
-		{ n:"CB", a: -120, r2:13 },
-		{ n:"DC", a:135 },
-		{ n:"DB", a: 180 },
-
-		{ n:"AB", a:165 },
-		{ n:"AC", a: +90, r2:13 },
-		{ n:"AD", a: 15 },
-		{ n:"BC", a: 40 },
-		{ n:"BD", a:  0 },
-		{ n:"CD", a:-50, r2:13 },
-	]
-
-	const s = new QuadrigonSvg(parent, LIMIT, A, B, C, D)
+	const p = new Quadrigon(LIMIT, A, B, C, D)
+	const s = new PolygonSvg(parent, LIMIT, p)
 	// example: BACD, four at a time from six combinations
-	s.draw([
-		{ p1:"B", p2:A, c:"AB fat" },
-		{ p1:"A", p2:C, c:"AC fat" },
-		//{ p1:"A", p2:D, c:"AD fat" },
-		//{ p1:"B", p2:C, c:"BC fat" },
-		//{ p1:"B", p2:D, c:"BD fat" },
-		{ p1:"C", p2:D, c:"CD fat" },
-	])
-
-	s.drawPoints(DIAGONALS, { 
-		r1:5, c1:"dot-1", c2:"text small", r2:25 
-	})
-	s.drawPoints(INFINITY, { 
-		r1:2, c1:"dot-1", c2:"text small", r2:20 
-	})
+	const segments = [
+		{ p1:"A", p2:"B" },
+		//{ p1:"A", p2:"C" },
+		//{ p1:"A", p2:"D" },
+		{ p1:"B", p2:"C" },
+		//{ p1:"B", p2:"D" },
+		{ p1:"C", p2:"D" },
+	]
+	const points = [
+		{ n:"A", a: A.a },
+		{ n:"B", a: B.a },
+		{ n:"C", a: C.a },
+		{ n:"D", a: D.a },
+	]
+	s.draw(segments, points)
+	s.drawDiagonalPoints(d)
+	s.drawInfinityPoints()
+	s.drawInfinityOrderTexts()
 }
 
-
-new DigonSvg     (document.getElementById("digon-1"))
-new TrigonSvg    (document.getElementById("trigon-1"))
+/*
+*/
+new Digon1Svg    (document.getElementById("digon-1"))
+new Trigon1Svg   (document.getElementById("trigon-1"))
 new Quadrigon1Svg(document.getElementById("quadrigon-1"))
 new Quadrigon2Svg(document.getElementById("quadrigon-2"))
 
 </script>
 
-<object data="inkscape/tri-to-penta.svg" type="image/svg+xml" width="600px"></object>
+<!--object data="inkscape/tri-to-penta.svg" type="image/svg+xml" width="600px"></object-->
 
 </body>
 </html>
