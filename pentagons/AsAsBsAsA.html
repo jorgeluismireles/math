@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AsAsBsAsA pentagons</title>
+<style>
+* { font-family: sans-serif; }
+small { color:#888; }
+span { font-family: monospace; color:#08f; }
+.n { text-align: right; padding:0 5px; font-family: monospace; }
+th { padding:0 10px; border-bottom:1px solid gray;}
+</style>
+</head>
+<body>
+<h1>Pentagons family type <span>AsAsBsAsA</span></h1>
+<h2>Definitions</h2>
+<table>
+<tr><th>Variable</th><th>Details</th><th>Formula</th></tr>
+<tr><td class="n"><span>A</span></td><td>One of four equal angles.</td></tr>
+<tr><td class="n"><span>B</span></td><td>Fifth angle.</td><td><tt>B = 3&pi; - 4A</td></tt></tr>
+<tr><td class="n"><span>s</span></td><td>One of four equal sides.</td></tr>
+<tr><td class="n"><span>t</span></td><td>Fifth side</td><td><tt>t = 2s(cos(A) - 2cos(2A))</tt></td></tr>
+</table>
+
+<h2>Special cases</h2>
+<table>
+<tr><th><span>B</span>/<span>A</span></th><th><span>A</span></th><th><span>B</span></th><th><span>t</span>/<span>s</span></th>
+	<th>Pentagon</th><th>Details</th></tr>
+<tr><td class="n">0</td><td class="n">135.0°</td><td class="n">0.0°</td><td class="n">-1.41+</td>
+	<td>Degenerate</td><td>Octagon profile?</td></tr>
+<tr><td class="n">1/2</td><td class="n">120.0°</td><td class="n">60.0°</td><td class="n">0.000</td>
+	<td>Degenerate</td><td>Diamond (Regular hexagon third section).</td></tr>
+
+<tr><td class="n">2/3</td><td class="n">115.+°</td><td class="n">77.+°</td><td class="n">0.37+</td>
+	<td>Simple convex</td><td>In heptagram?</td></tr>
+
+<tr><td class="n"> 1</td><td class="n">108.0°</td><td class="n">108.0°</td><td class="n">1.000</td>
+	<td>Simple convex</td><td>{5} <b>Regular</b> pentagon.</td></tr>
+
+<tr><td class="n">3/2</td><td class="n">98.+°</td><td class="n">147.+°</td><td class="n">1.63+</td>
+	<td>Simple convex</td><td>In hendecagram...</td></tr>
+
+<tr><td class="n"> 2</td><td class="n">90.0°</td><td class="n">180.0°</td><td class="n">2.000</td>
+	<td>Simple degenerate</td><td>Domino (1x2 rectangle)</td></tr>
+
+<tr><td class="n"> 3</td><td class="n">77.+°</td><td class="n">231.+°</td><td class="n">2.24+</td>
+	<td>Simple concave</td><td>{7/2} regular heptagram section</td></tr>
+<tr><td class="n"> 4</td><td class="n">67.5°</td><td class="n">260.0°</td><td class="n">2.17+</td>
+	<td>Simple concave</td><td>{8/3} regular octagram section</td></tr>
+<tr><td class="n"> 5</td><td class="n">60.0°</td><td class="n">300.0°</td><td class="n">2.000</td>
+	<td>Degenerate</td><td>Two equilateral triangles</td></tr>
+<tr><td class="n"> 6</td><td class="n">54.0°</td><td class="n">324.0°</td><td class="n">1.79+</td>
+	<td>Complex</td><td>{10/3} regular decagram section.</td></tr>
+<tr><td class="n"> 7</td><td class="n">49.+°</td><td class="n">343.+°</td><td class="n">1.59+</td>
+	<td>Complex</td><td>Undecagram section ?.</td></tr>
+<tr><td class="n"> 8</td><td class="n">45.0°</td><td class="n">360.0°</td><td class="n">1.41+</td>
+	<td>Complex degenerate</td><td>Half square (arrow)</td></tr>
+<tr><td class="n"> 9</td><td class="n">41.+°</td><td class="n">373.+°</td><td class="n">1.25+</td>
+	<td>Complex B>2&pi;</td><td>Tridecagram section</td></tr>
+<tr><td class="n">10</td><td class="n">38.+°</td><td class="n">385.+°</td><td class="n">1.11+</td>
+	<td>Complex B>2&pi;</td><td>Tetradecagram section</td></tr>
+<tr><td class="n">11</td><td class="n">36.0°</td><td class="n">396.0°</td><td class="n">1.000</td>
+	<td>Complex B>2&pi;</td><td>{5/2} <b>Equilateral</b> pentagram</td></tr>
+<tr><td class="n">12</td><td class="n">33.+°</td><td class="n">405.0°</td><td class="n">0.89+</td>
+	<td>Complex B>2&pi;</td><td>...</td></tr>
+<tr><td class="n">13</td><td class="n">31.+°</td><td class="n">412.+°</td><td class="n">0.80+</td>
+	<td>Complex B>2&pi;</td><td>17 star?</td></tr>
+<tr><td class="n">14</td><td class="n">30.0°</td><td class="n">420.0°</td><td class="n">0.73+</td>
+	<td>Complex B>2&pi; Degenerate</td><td>Equilteral triangle section</td></tr>
+
+</table>
+
+<div><small>Created: 2019/11/24</small></div>
+<div><small>Updated: 2019/11/24</small></div>
+
+</body>
+
+<script>
+const bf = [ 
+	-2, -1, 0, 2/15., 1.0/2, 2.0/3,
+	1, 1.5, 2, 3, 4, 5, 6, 7, 
+	8, 9, 10, 11, 12, 13, 14, 15
+]
+bf.forEach(f => {
+	// 4a + fa = 3pi
+	const A = 3*Math.PI / (4 + f)
+	const t = 2*(Math.cos(A) - Math.cos(2*A))
+	const Ad = 180*A/Math.PI
+	const Bd = Ad*f
+	console.log(`f=${f} A=${Ad}° B=${Bd}° t=${t}`)
+
+})
+
+</script>
+
+</html>
